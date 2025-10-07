@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
 
-// @ts-ignore
-let cached = global.mongoose;
+
+let cached = (global as any).mongoose;
 
 if (!cached) {
-    // @ts-ignore
-    cached = global.mongoose = { conn: null, promise: null };
+    cached = (global as any).mongoose = { conn: null, promise: null };
 }
 
 export async function connectToDatabase() {

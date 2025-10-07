@@ -1,12 +1,22 @@
 import { clsx, type ClassValue } from "clsx"
-import { NextResponse } from "next/server";
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function handleErrorResponse(e: unknown) {
-  console.error(e);
-  return NextResponse.json({ error: e }, { status: 500 });
+export function toFormData(data: Record<string, string>) {
+  const formData = new FormData();
+  Object.entries(data).forEach(([key, value]) => {
+    formData.append(key, value as string);
+  });
+  return formData;
+}
+
+export function fromFormData(formData: FormData): Record<string, string> {
+  const data: Record<string, string> = {};
+  formData.forEach((value, key) => {
+    data[key] = value as string;
+  });
+  return data;
 }

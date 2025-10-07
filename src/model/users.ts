@@ -33,11 +33,15 @@ if (!mongoose.models.User) {
   });
 
   userSchema.post(/^find/, function (docs) {
-    if (docs) {
-      docs.forEach((doc: User) => {
-        doc.username = doc.username.split('@@')[0];
-      });
+    if (!docs) {
+      return;
     }
+    if (!Array.isArray(docs)) {
+      docs = [docs];
+    }
+    docs.forEach((doc: User) => {
+      doc.username = doc.username.split('@@')[0];
+    });
   });
 }
 
@@ -45,11 +49,17 @@ if (!mongoose.models.User) {
 // 创建用户表模型
 const UserModel = mongoose.models.User || mongoose.model('User', userSchema);
 
+export class AlreadyInUseError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
 export async function createEmailPasswordUser(req: CreateEmailUserRequest) {
   // 检查是否已存在相同 email 的用户
   const existingUser = await UserModel.findOne({ email: req.email });
   if (existingUser) {
-    throw new Error('Email already in use');
+    throw new AlreadyInUseError('Email is already in use');
   }
 
   const hashedPassword = await hashPassword(req.password);
@@ -81,8 +91,5 @@ export async function removeTestUsers() {
     username: { $regex: '^test-', $options: 'i' },
   });
 }
-
-
-
 
 export default UserModel;

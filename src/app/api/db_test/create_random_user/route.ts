@@ -1,5 +1,5 @@
 import { connectToDatabase } from "@/db/driver";
-import { handleErrorResponse } from "@/lib/utils";
+import { handleErrorResponse } from "@/lib/server_utils";
 import { createEmailPasswordUser } from "@/model/users";
 import { CreateEmailUserRequest } from "@/types/user"
 import { NextResponse } from "next/server";

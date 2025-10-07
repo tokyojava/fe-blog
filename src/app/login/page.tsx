@@ -4,32 +4,33 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { CreateEmailUserRequest, CreateEmailUserZodSchema } from "@/types/user";
+import { LoginUserZodSchema } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState, useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { SignUpAction } from "./actions";
+import { LoginAction } from "./actions";
 import { toFormData } from "@/lib/utils";
 import Link from "next/link";
+
 const initialState = {
     serverValidationErrors: {},
     apiError: undefined
-}
-export default function SignupPage() {
-    const { register, handleSubmit, formState: { errors } } = useForm<CreateEmailUserRequest>({
-        resolver: zodResolver(CreateEmailUserZodSchema),
+};
+
+export default function LoginPage() {
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: zodResolver(LoginUserZodSchema),
         defaultValues: {
-            username: "aaa",
             email: "a@a.com",
             password: "11111111",
         }
-    })
+    });
 
-    const [serverState, action, pending] = useActionState(SignUpAction, initialState);
+    const [serverState, action, pending] = useActionState(LoginAction, initialState);
 
-    const submit = useCallback(async (data: CreateEmailUserRequest) => {
+    const submit = useCallback(async (data: Record<string, string>) => {
         startTransition(async () => {
-            const formData = toFormData(data as Record<string, string>);
+            const formData = toFormData(data);
             await action(formData);
         });
     }, [action]);
@@ -39,25 +40,16 @@ export default function SignupPage() {
             <Card className="w-1/2 absolute top-1/6 left-1/2 -translate-x-1/2">
                 <CardHeader>
                     <CardTitle>
-                        Create your account
+                        Welcome Back
                     </CardTitle>
 
                     <CardDescription>
-                        Enter your email below to create your account
+                        Enter your email and password to log in
                     </CardDescription>
-
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(submit)}>
                         <FieldGroup>
-                            <Field>
-                                <FieldLabel htmlFor="username">Full Name</FieldLabel>
-                                <Input {...register("username")} id="username" type="input" placeholder="Jane Doe" />
-                                {errors.username && <FieldDescription className="text-red-500">{errors.username.message}</FieldDescription>}
-                                {serverState.serverValidationErrors.username && serverState.serverValidationErrors.username.map((err, idx) => (
-                                    <FieldDescription key={idx} className="text-red-500">{err}</FieldDescription>
-                                ))}
-                            </Field>
                             <Field>
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
                                 <Input {...register("email")} id="email" type="input" placeholder="m@example.com" />
@@ -67,31 +59,26 @@ export default function SignupPage() {
                                 ))}
                             </Field>
                             <Field>
-                                <Field>
-                                    <FieldLabel htmlFor="pw1">Password</FieldLabel>
-                                    <Input {...register("password")} id="pw1" type="password" />
-                                    {errors.password && <FieldDescription className="text-red-500">{errors.password.message}</FieldDescription>}
-                                    {serverState.serverValidationErrors.password && serverState.serverValidationErrors.password.map((err, idx) => (
-                                        <FieldDescription key={idx} className="text-red-500">{err}</FieldDescription>
-                                    ))}
-                                </Field>
-                                <FieldDescription>
-                                    Must be at least 8 characters long.
-                                </FieldDescription>
+                                <FieldLabel htmlFor="password">Password</FieldLabel>
+                                <Input {...register("password")} id="password" type="password" />
+                                {errors.password && <FieldDescription className="text-red-500">{errors.password.message}</FieldDescription>}
+                                {serverState.serverValidationErrors.password && serverState.serverValidationErrors.password.map((err, idx) => (
+                                    <FieldDescription key={idx} className="text-red-500">{err}</FieldDescription>
+                                ))}
                             </Field>
                             {serverState.apiError && <div className="text-red-500 text-center">{serverState.apiError}</div>}
                             <Field>
                                 <Button disabled={pending} type="submit">
-                                    Create Account
+                                    Log In
                                 </Button>
                                 <FieldDescription className="text-center">
-                                    Already have an account? <Link href="/login">Sign in</Link>
+                                    Don&apos;t have an account? <Link href="/signup">Sign up</Link>
                                 </FieldDescription>
                             </Field>
                         </FieldGroup>
                     </form>
                 </CardContent>
-            </Card >
-        </div >
-    )
+            </Card>
+        </div>
+    );
 }
