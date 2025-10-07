@@ -1,5 +1,5 @@
 import { connectToDatabase } from "@/db/driver";
-import User from "@/db/users";
+import User from "@/model/users";
 
 export async function GET() {
     try {
