@@ -16,8 +16,10 @@
 | 字段名          | 类型         | 描述                     |
 | ------------- | ---------- | ---------------------- |
 | `_id`         | ObjectId   | 用户唯一标识（MongoDB 自动生成） |
-| `username`    | String     | 用户在第三方平台的用户名                   |           |
-| `auth_type`   | String     | 登录方式（如 GitHub、google，目前只支持Github） |
+| `email`    | String     | 邮件登录                   |      
+| `password`    | String     | 邮件登录密码                |      
+| `username`    | String     | 用户在第三方平台的用户名或者邮件登录时候的登录名                   |           |
+| `auth_type`   | String     | 登录方式（如 github或者email） |
 | `third_party_id`   | String     | 第三方登录的ID，如在Github的ID |
 | `created_at`  | Date       | 用户创建时间               |
 | `updated_at`  | Date       | 用户信息更新时间             |
@@ -49,25 +51,14 @@
 | `post_id`     | ObjectId   | 文章 ID（关联 `posts` 表）     |
 | `views`       | Number     | 文章阅读次数               |
 | `created_at`  | Date       | 统计记录创建时间             |
-| `updated_at`  | Date       | 统计记录更新时间             |
-
----
-
-### 4️⃣ 系统配置表（`settings`）
-
-| 字段名          | 类型         | 描述                     |
-| ------------- | ---------- | ---------------------- |
-| `_id`         | ObjectId   | 配置唯一标识（MongoDB 自动生成） |
-| `theme`       | String     | 当前主题（`light` 或 `dark`） |
-| `created_at`  | Date       | 配置创建时间               |
-| `updated_at`  | Date       | 配置更新时间               |
+| `updated_at`  | Date       | 统计记录更新时间             |          |
 
 ---
 
 ## 三、字段说明
 
 1. **用户表（`users`）**
-   - `auth_type` 字段用于区分用户的登录方式，例如 `github` 等。
+   - `auth_type` 字段用于区分用户的登录方式，例如 `github`或者`email` 等。
 
 2. **文章表（`posts`）**
    - `summary` 和 `tags` 字段由 AI 自动生成，用户可手动修改。
