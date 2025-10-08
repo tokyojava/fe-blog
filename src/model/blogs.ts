@@ -9,6 +9,7 @@ export interface IBlog extends Document {
   summary?: string;
   tags?: string[];
   type: 'blog' | 'diary';
+  category: string;
   author: mongoose.Types.ObjectId;
   is_public: boolean;
   created_at: Date;
