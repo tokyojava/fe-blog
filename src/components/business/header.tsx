@@ -1,24 +1,8 @@
-import { type TokenPayload, verifyToken } from "@/lib/token";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import { FaHome } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { signOut } from "./action";
-
-async function fetchUser() {
-    const cookie = await cookies();
-    const token = cookie.get("token")?.value;
-    if (!token) {
-        return null;
-    } else {
-        try {
-            const user = await verifyToken(token) as TokenPayload;
-            return user;
-        } catch (e) {
-            return null;
-        }
-    }
-}
+import { fetchUser } from "@/lib/server_utils";
 
 export default async function Header() {
     const user = await fetchUser();

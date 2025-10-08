@@ -1,19 +1,43 @@
 'use server'
 
+import { fetchUser, serverError } from "@/lib/server_utils";
 import { fromFormData } from "@/lib/utils";
-import { CreatePostZodSchema } from "@/types/post";
+import { createBlog } from "@/model/blogs";
+import { CreateBlogRequest, CreateBlogZodSchema } from "@/types/blog";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
-export type CreatePostActionServerSideState = {
+export type CreateBlogActionServerSideState = {
     apiError?: string;
 }
 
-export async function CreatePostAction(prevState: CreatePostActionServerSideState, formData: FormData) {
+export async function CreateBlogAction(prevState: CreateBlogActionServerSideState, formData: FormData) {
     // 这里可以处理表单数据，例如保存到数据库
-    const obj = fromFormData(formData);
-    const result = await CreatePostZodSchema.safeParseAsync(obj);
+    const obj = fromFormData(formData) as CreateBlogRequest;
+    const result = await CreateBlogZodSchema.safeParseAsync(obj);
+
+    const user = await fetchUser();
+    if (!user) {
+        // TODO: bug
+        redirect('/login');
+    }
 
     if (result.success) {
-        console.log(result.data);
+        let blog = null;
+        try {
+            blog = await createBlog({
+                ...obj,
+                author: user.id,
+            });
+
+        } catch (e: unknown) {
+            serverError(e);
+            return {
+                apiError: "Internal server error"
+            };
+        }
+        revalidatePath('/dashboard');
+        redirect('/blog/' + blog._id);
     } else {
         return {
             apiError: "Invalid input data, this should not happen"

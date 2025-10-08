@@ -25,3 +25,11 @@ export async function verifyToken(token: string) {
         return null;
     }
 }
+
+export async function getUserFromToken(token: string) {
+    const payload = await verifyToken(token);
+    if (payload) {
+        return payload as TokenPayload;
+    }
+    return null;
+}

@@ -1,15 +1,16 @@
 import { FieldValues, Path, useForm } from "react-hook-form";
 import { Field } from "./field";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./form";
 import { Input } from "./input";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
-import { Button } from "./button";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./command";
-import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Button } from "./button";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./command";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Textarea } from "./textarea";
+import { RadioGroup, RadioGroupItem } from "./radio-group";
 
 type MyBaseFormFieldProps<T extends FieldValues> = {
     form: ReturnType<typeof useForm<T>>;
@@ -25,6 +26,11 @@ type MyInputFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> & {
 
 type MyTextAreaFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> & {
     placeholder?: string;
+}
+
+
+type MyRadioGroupFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> & {
+    options: { label: string; value: string }[];
 }
 
 type KeyValuePairGroup = {
@@ -114,7 +120,6 @@ export function MySelectFormField<T extends FieldValues>({ form, name, label, pl
     const [value, setValue] = useState("");
 
     const flattenedPairs = useMemo(() => groups.flatMap(group => group.pairs), [groups]);
-    console.log(value);
 
     return (
         <Field>
@@ -177,8 +182,39 @@ export function MySelectFormField<T extends FieldValues>({ form, name, label, pl
                 )}
             />
         </Field>
-
-
     );
 }
 
+export function MyRadioGroupFormField<T extends FieldValues>({ form, name, label, options }: MyRadioGroupFormFieldProps<T>) {
+    return (
+        <FormField
+            control={form.control}
+            name={name}
+            render={({ field }) => (
+                <FormItem className="space-y-3">
+                    <FormLabel>{label}</FormLabel>
+                    <FormControl>
+                        <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="flex flex-row"
+                        >
+                            {options.map((option) => (
+                                <FormItem key={option.value} className="flex items-center space-x-3 space-y-0">
+                                    <FormControl>
+                                        <RadioGroupItem value={option.value} id={option.value} />
+                                    </FormControl>
+                                    <FormLabel className="font-normal" htmlFor={option.value}>
+                                        {option.label}
+                                    </FormLabel>
+                                </FormItem>
+                            ))}
+
+                        </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+    )
+}       

@@ -1,6 +1,21 @@
 export const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 export const TOKEN_VALIDATION_INTERVAL = 7;//7 days
 
+
+export const blogTypes = [
+    { label: "Diary", value: "diary" },
+    { label: "Blog", value: "blog" },
+];
+
+export const casualValuePairs = [
+    { label: "Life", value: "life" },
+    { label: "Travel", value: "travel" },
+    { label: "Food", value: "food" },
+    { label: "Health", value: "health" },
+    { label: "Fitness", value: "fitness" },
+    { label: "Hobby", value: "hobby" },
+]
+
 // TODO: will read from DB later
 export const frontendKeyValuePairs = [
     { label: "JavaScript", value: "javascript" },
@@ -40,6 +55,10 @@ export const otherKeyValuePairs = [
 ];
 
 export const techGroups = [
+    {
+        title: "Casual",
+        pairs: casualValuePairs,
+    },
     {
         title: "Frontend",
         pairs: frontendKeyValuePairs,

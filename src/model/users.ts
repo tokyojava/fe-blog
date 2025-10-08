@@ -1,9 +1,20 @@
 import { constraints, type CreateEmailUserRequest, type User } from '@/types/user';
 import mongoose, { Schema } from 'mongoose';
 import { hashPassword } from '@/lib/password';
+import { AlreadyInUseError } from '@/lib/custom_errors';
+
+export interface IUser extends Document {
+  username: string;
+  email: string;
+  password: string;
+  auth_type: string;
+  third_party_id?: string;
+  created_at: Date;
+  updated_at: Date;
+}
 
 // 定义用户表 Schema
-const userSchema: Schema = new Schema({
+const userSchema: Schema = new Schema<IUser>({
   username: {
     type: String,
     required: true,
@@ -49,17 +60,11 @@ if (!mongoose.models.User) {
 // 创建用户表模型
 const UserModel = mongoose.models.User || mongoose.model('User', userSchema);
 
-export class AlreadyInUseError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
-}
-
 export async function createEmailPasswordUser(req: CreateEmailUserRequest) {
   // 检查是否已存在相同 email 的用户
   const existingUser = await UserModel.findOne({ email: req.email });
   if (existingUser) {
-    throw new AlreadyInUseError('Email is already in use');
+    throw new AlreadyInUseError();
   }
 
   const hashedPassword = await hashPassword(req.password);

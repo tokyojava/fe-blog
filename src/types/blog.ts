@@ -11,7 +11,7 @@ export const constraints = {
     },
 };
 
-export const CreatePostZodSchema = z.object({
+export const CreateBlogZodSchema = z.object({
     title: z.string()
         .min(constraints.title.minLength, `Title must be at least ${constraints.title.minLength} characters long`)
         .max(constraints.title.maxLength, `Title must be at most ${constraints.title.maxLength} characters long`),
@@ -21,7 +21,7 @@ export const CreatePostZodSchema = z.object({
     tags: z.array(z.string()).optional(),
     summary: z.string().optional(),
     category: z.string("Category is required"),
-    type: z.enum(['blog', 'diary']),
+    type: z.enum(['blog', 'diary'], "Type must be either 'Blog' or 'Diary'"),
 });
 
-export type CreatePostRequest = z.infer<typeof CreatePostZodSchema>;
+export type CreateBlogRequest = z.infer<typeof CreateBlogZodSchema>;

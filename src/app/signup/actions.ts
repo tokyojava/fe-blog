@@ -1,9 +1,10 @@
 "use server";
 import { connectToDatabase } from "@/db/driver";
+import { AlreadyInUseError } from "@/lib/custom_errors";
 import { serverError } from "@/lib/server_utils";
 import { fromFormData } from "@/lib/utils";
-import { AlreadyInUseError, createEmailPasswordUser } from "@/model/users";
-import { CreateEmailUserZodSchema } from "@/types/user"
+import { createEmailPasswordUser } from "@/model/users";
+import { CreateEmailUserZodSchema } from "@/types/user";
 import { redirect } from "next/navigation";
 
 export type SignUpActionServerSideState = {
