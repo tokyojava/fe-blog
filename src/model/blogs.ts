@@ -1,9 +1,10 @@
 import { serverError } from '@/lib/server_utils';
 import { CreateBlogRequest } from '@/types/blog';
 import mongoose, { Schema } from 'mongoose';
-import { IUser } from './users';
+import { ensureUserModelRegistration, type IUser } from './users';
 
 export interface IBlog extends Document {
+  _id: string;
   title: string;
   content: string;
   summary?: string;
@@ -23,6 +24,7 @@ const blogSchema: Schema = new Schema<IBlog>({
   summary: { type: String },
   tags: { type: [String] },
   type: { type: String, enum: ['blog', 'diary'], required: true },
+  category: { type: String, required: true },
   author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   is_public: { type: Boolean, default: true },
   created_at: { type: Date, default: Date.now },
@@ -37,9 +39,8 @@ blogSchema.index({ tags: 1 });
 // 创建文章表模型
 const BlogModel = mongoose.models.Blog || mongoose.model('Blog', blogSchema);
 
-
-
 export async function createBlog(req: CreateBlogRequest & { author: string }) {
+  debugger;
   const newBlog = new BlogModel({
     title: req.title,
     content: req.content,
@@ -53,8 +54,10 @@ export async function createBlog(req: CreateBlogRequest & { author: string }) {
   return newBlog;
 }
 
-type PopulatedBlog = IBlog & { author: IUser };
+export type PopulatedBlog = IBlog & { author: IUser };
 
+// As we will call populate below, we need to make sure User model is registered
+ensureUserModelRegistration();
 export async function getBlogById(id: string) {
   try {
     const blog = await BlogModel.findById(id).populate('author').lean<PopulatedBlog>();
@@ -64,5 +67,28 @@ export async function getBlogById(id: string) {
     throw e;
   }
 }
+
+export async function getMyBlogs(authorId: string) {
+  try {
+    const blogs = await BlogModel.find({ author: authorId })
+      .sort({ created_at: -1 })
+      .populate('author')
+      .lean<PopulatedBlog[]>();
+    return blogs;
+  } catch (e) {
+    serverError(e);
+    throw e;
+  }
+}
+
+export async function deleteBlog(id: string) {
+  try {
+    const res = await BlogModel.deleteOne({ _id: id });
+    return res.deletedCount === 1;
+  } catch (e) {
+    serverError(e);
+    throw e;
+  }
+} 
 
 export default BlogModel;

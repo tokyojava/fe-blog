@@ -15,6 +15,7 @@ import { Edit, Eye } from "lucide-react";
 import { startTransition, useActionState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { CreateBlogAction, CreateBlogActionServerSideState } from "./action";
+import { BackToList } from "@/components/business/back_to_list";
 
 const initialState: CreateBlogActionServerSideState = {
     apiError: undefined
@@ -28,8 +29,8 @@ export default function CreateBlogPage() {
             content: "aaaa nwnew. nmwewe",
             tags: [],
             summary: "",
-            category: "javascript",
-            type: "blog",
+            category: undefined,
+            type: undefined,
         }
     })
 
@@ -48,6 +49,8 @@ export default function CreateBlogPage() {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(submit)}>
+                <BackToList />
+
                 <Card className="mt-4 mx-4">
                     <CardHeader>
                         <CardTitle>Create Blog</CardTitle>

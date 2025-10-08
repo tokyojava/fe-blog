@@ -1,5 +1,6 @@
 'use server'
 
+import { connectToDatabase } from "@/db/driver";
 import { fetchUser, serverError } from "@/lib/server_utils";
 import { fromFormData } from "@/lib/utils";
 import { createBlog } from "@/model/blogs";
@@ -25,6 +26,9 @@ export async function CreateBlogAction(prevState: CreateBlogActionServerSideStat
     if (result.success) {
         let blog = null;
         try {
+            await connectToDatabase();
+
+            console.log(obj);            
             blog = await createBlog({
                 ...obj,
                 author: user.id,
@@ -37,7 +41,7 @@ export async function CreateBlogAction(prevState: CreateBlogActionServerSideStat
             };
         }
         revalidatePath('/blogs');
-        redirect('/blog/' + blog._id);
+        redirect('/blogs/' + blog._id);
     } else {
         return {
             apiError: "Invalid input data, this should not happen"

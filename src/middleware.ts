@@ -3,7 +3,7 @@ import { verifyToken } from "./lib/token";
 import { serverError } from "./lib/server_utils";
 
 function needAuth(path: string) {
-    return path === "/blog/create" || path === "/blog/update";
+    return path === "/blogs/create" || path === "/blogs/update";
 }
 
 function redirectToLogin(req: NextRequest) {
@@ -34,5 +34,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/blog/create", "/blog/update"],
+    matcher: ["/blogs/create", "/blogs/update"],
 };

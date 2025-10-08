@@ -56,9 +56,12 @@ if (!mongoose.models.User) {
   });
 }
 
+export function ensureUserModelRegistration() {
+  return mongoose.models.User || mongoose.model('User', userSchema);
+}
 
 // 创建用户表模型
-const UserModel = mongoose.models.User || mongoose.model('User', userSchema);
+const UserModel = ensureUserModelRegistration();
 
 export async function createEmailPasswordUser(req: CreateEmailUserRequest) {
   // 检查是否已存在相同 email 的用户

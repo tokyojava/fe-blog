@@ -3,14 +3,9 @@ import { Field } from "./field";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./form";
 import { Input } from "./input";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
-import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Button } from "./button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./command";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
-import { Textarea } from "./textarea";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
+import { Textarea } from "./textarea";
+import { KeyValuePairGroup, SingleSelect } from "../business/single-select";
 
 type MyBaseFormFieldProps<T extends FieldValues> = {
     form: ReturnType<typeof useForm<T>>;
@@ -31,11 +26,6 @@ type MyTextAreaFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> &
 
 type MyRadioGroupFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> & {
     options: { label: string; value: string }[];
-}
-
-type KeyValuePairGroup = {
-    title: string;
-    pairs: { label: string; value: string }[];
 }
 
 type MySelectFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> & {
@@ -116,11 +106,6 @@ export function MyTextAreaFormField<T extends FieldValues>({ className, noLabel,
 // }
 
 export function MySelectFormField<T extends FieldValues>({ form, name, label, placeholder, groups }: MySelectFormFieldProps<T>) {
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState("");
-
-    const flattenedPairs = useMemo(() => groups.flatMap(group => group.pairs), [groups]);
-
     return (
         <Field>
             <FormField
@@ -130,52 +115,13 @@ export function MySelectFormField<T extends FieldValues>({ form, name, label, pl
                     <FormItem>
                         <FormLabel>{label}</FormLabel>
                         <FormControl>
-                            <Popover open={open} onOpenChange={setOpen}>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        role="combobox"
-                                        aria-expanded={open}
-                                        className="w-48 justify-between"
-                                    >
-                                        {value
-                                            ? flattenedPairs.find((f) => f.value === value)?.label
-                                            : placeholder}
-                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-48 p-0">
-                                    <Command>
-                                        <CommandInput placeholder="Search..." />
-                                        <CommandList>
-                                            <CommandEmpty>No framework found.</CommandEmpty>
-                                            {groups.map((group) => (
-                                                <CommandGroup key={group.title} heading={group.title}>
-                                                    {group.pairs.map((pair) => (
-                                                        <CommandItem
-                                                            key={pair.value}
-                                                            value={pair.value}
-                                                            onSelect={(currentValue) => {
-                                                                setValue(currentValue === value ? "" : currentValue);
-                                                                field.onChange(currentValue === value ? "" : currentValue);
-                                                                setOpen(false);
-                                                            }}
-                                                        >
-                                                            <Check
-                                                                className={cn(
-                                                                    "mr-2 h-4 w-4",
-                                                                    value === pair.value ? "opacity-100" : "opacity-0"
-                                                                )}
-                                                            />
-                                                            {pair.label}
-                                                        </CommandItem>
-                                                    ))}
-                                                </CommandGroup>
-                                            ))}
-                                        </CommandList>
-                                    </Command>
-                                </PopoverContent>
-                            </Popover>
+                            <SingleSelect
+                                groups={groups}
+                                placeholder={placeholder || "Select an option"}
+                                onChange={(value) => {
+                                    field.onChange(value);
+                                }}
+                            />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
