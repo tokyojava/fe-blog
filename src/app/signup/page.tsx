@@ -2,21 +2,23 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Form } from "@/components/ui/form";
+import MyInputFormField from "@/components/ui/my_input_form_field";
+import { toFormData } from "@/lib/utils";
 import { CreateEmailUserRequest, CreateEmailUserZodSchema } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { startTransition, useActionState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { SignUpAction } from "./actions";
-import { toFormData } from "@/lib/utils";
-import Link from "next/link";
 const initialState = {
     serverValidationErrors: {},
     apiError: undefined
 }
+
 export default function SignupPage() {
-    const { register, handleSubmit, formState: { errors } } = useForm<CreateEmailUserRequest>({
+    const form = useForm<CreateEmailUserRequest>({
         resolver: zodResolver(CreateEmailUserZodSchema),
         defaultValues: {
             username: "aaa",
@@ -48,48 +50,24 @@ export default function SignupPage() {
 
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit(submit)}>
-                        <FieldGroup>
-                            <Field>
-                                <FieldLabel htmlFor="username">Full Name</FieldLabel>
-                                <Input {...register("username")} id="username" type="input" placeholder="Jane Doe" />
-                                {errors.username && <FieldDescription className="text-red-500">{errors.username.message}</FieldDescription>}
-                                {serverState.serverValidationErrors.username && serverState.serverValidationErrors.username.map((err, idx) => (
-                                    <FieldDescription key={idx} className="text-red-500">{err}</FieldDescription>
-                                ))}
-                            </Field>
-                            <Field>
-                                <FieldLabel htmlFor="email">Email</FieldLabel>
-                                <Input {...register("email")} id="email" type="input" placeholder="m@example.com" />
-                                {errors.email && <FieldDescription className="text-red-500">{errors.email.message}</FieldDescription>}
-                                {serverState.serverValidationErrors.email && serverState.serverValidationErrors.email.map((err, idx) => (
-                                    <FieldDescription key={idx} className="text-red-500">{err}</FieldDescription>
-                                ))}
-                            </Field>
-                            <Field>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(submit)}>
+                            <FieldGroup>
+                                <MyInputFormField form={form} name="username" label="Your username" placeholder="Your username" /> {/* 使用自定义组件 */}
+                                <MyInputFormField form={form} name="email" label="Email" placeholder="Your email" /> {/* 使用自定义组件 */}
+                                <MyInputFormField form={form} name="password" label="Password" placeholder="Your password" /> {/* 使用自定义组件 */}
+                                {serverState.apiError && <div className="text-red-500 text-center">{serverState.apiError}</div>}
                                 <Field>
-                                    <FieldLabel htmlFor="pw1">Password</FieldLabel>
-                                    <Input {...register("password")} id="pw1" type="password" />
-                                    {errors.password && <FieldDescription className="text-red-500">{errors.password.message}</FieldDescription>}
-                                    {serverState.serverValidationErrors.password && serverState.serverValidationErrors.password.map((err, idx) => (
-                                        <FieldDescription key={idx} className="text-red-500">{err}</FieldDescription>
-                                    ))}
+                                    <Button disabled={pending} type="submit">
+                                        {pending ? "Signing up..." : "Sign Up"}
+                                    </Button>
                                 </Field>
-                                <FieldDescription>
-                                    Must be at least 8 characters long.
-                                </FieldDescription>
-                            </Field>
-                            {serverState.apiError && <div className="text-red-500 text-center">{serverState.apiError}</div>}
-                            <Field>
-                                <Button disabled={pending} type="submit">
-                                    Create Account
-                                </Button>
-                                <FieldDescription className="text-center">
-                                    Already have an account? <Link href="/login">Sign in</Link>
-                                </FieldDescription>
-                            </Field>
-                        </FieldGroup>
-                    </form>
+                            </FieldGroup>
+                            <div className="text-sm text-center text-gray-500 mt-2">
+                                Already have an account? <Link href="/login" className="text-blue-500 hover:underline">Log In</Link>
+                            </div>
+                        </form>
+                    </Form>
                 </CardContent>
             </Card >
         </div >

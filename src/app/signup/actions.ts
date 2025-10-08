@@ -26,7 +26,7 @@ export async function SignUpAction(prevState: SignUpActionServerSideState, formD
         } catch (e: unknown) {
             serverError(e);
             if (e instanceof AlreadyInUseError) {
-                return { serverValidationErrors: { email: [e.message] }, apiError: undefined };
+                return { serverValidationErrors: {}, apiError: e.message };
             }
             return { serverValidationErrors: {}, apiError: "Internal server error" };
         }
