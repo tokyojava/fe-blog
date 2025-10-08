@@ -60,7 +60,7 @@ export async function getBlogById(id: string) {
     return blog;
   } catch (e) {
     serverError(e);
-    return null;
+    throw e;
   }
 }
 

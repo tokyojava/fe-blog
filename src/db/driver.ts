@@ -14,7 +14,8 @@ export async function connectToDatabase() {
 
     if (!cached.promise) {
         cached.promise = mongoose.connect(process.env.MONGO_URI!, {
-            bufferCommands: false,
+            bufferCommands: true,
+            timeoutMS: 12000,
         }).then((mongoose) => {
             console.log("✅ MongoDB connected");
             return mongoose;
