@@ -56,7 +56,7 @@ export async function LoginAction(prevState: LoginActionServerSideState, formDat
             serverError(e);
             return { apiError: "Internal server error" };
         }
-        redirect('/dashboard'); // Redirect to home page after login
+        redirect('/blogs'); // Redirect to home page after login
     } else {
         serverError(result.error);
         return {

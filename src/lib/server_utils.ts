@@ -23,8 +23,8 @@ export async function fetchUser() {
     try {
       const user = await getUserFromToken(token);
       return user;
-    } catch (e) {
-      serverError("Failed to verify token:", e);
+    } catch (e: any) {
+      serverError("Failed to verify token:" + e.message);
       return null;
     }
   }

@@ -36,7 +36,7 @@ export async function CreateBlogAction(prevState: CreateBlogActionServerSideStat
                 apiError: "Internal server error"
             };
         }
-        revalidatePath('/dashboard');
+        revalidatePath('/blogs');
         redirect('/blog/' + blog._id);
     } else {
         return {
