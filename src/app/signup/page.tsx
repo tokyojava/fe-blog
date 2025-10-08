@@ -9,11 +9,10 @@ import { toFormData } from "@/lib/utils";
 import { CreateEmailUserRequest, CreateEmailUserZodSchema } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { startTransition, useActionState, useCallback } from "react";
+import { startTransition, useActionState, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { SignUpAction } from "./actions";
 const initialState = {
-    serverValidationErrors: {},
     apiError: undefined
 }
 
@@ -28,6 +27,11 @@ export default function SignupPage() {
     })
 
     const [serverState, action, pending] = useActionState(SignUpAction, initialState);
+
+    const values = form.watch(); // 使表单状态可响应式更新
+    useEffect(() => {
+        serverState.apiError = undefined;
+    }, [values]);
 
     const submit = useCallback(async (data: CreateEmailUserRequest) => {
         startTransition(async () => {

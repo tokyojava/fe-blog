@@ -7,12 +7,6 @@ import { CreateEmailUserZodSchema } from "@/types/user"
 import { redirect } from "next/navigation";
 
 export type SignUpActionServerSideState = {
-    serverValidationErrors: {
-        username?: string[];
-        email?: string[];
-        password?: string[];
-        confirmPassword?: string[];
-    },
     apiError?: string;
 }
 
@@ -26,16 +20,15 @@ export async function SignUpAction(prevState: SignUpActionServerSideState, formD
         } catch (e: unknown) {
             serverError(e);
             if (e instanceof AlreadyInUseError) {
-                return { serverValidationErrors: {}, apiError: e.message };
+                return { apiError: e.message };
             }
-            return { serverValidationErrors: {}, apiError: "Internal server error" };
+            return { apiError: "Internal server error" };
         }
 
         redirect('/login');
-        return { serverValidationErrors: {}, apiError: undefined };
+        return { apiError: undefined };
     } else {
         return {
-            serverValidationErrors: result.error.flatten().fieldErrors,
             apiError: undefined
         };
     }

@@ -14,7 +14,6 @@ import MyInputFormField from "@/components/ui/my_input_form_field";
 import { Form } from "@/components/ui/form";
 
 const initialState = {
-    serverValidationErrors: {},
     apiError: undefined
 };
 
