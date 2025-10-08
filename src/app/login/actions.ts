@@ -1,13 +1,14 @@
 "use server";
 import { connectToDatabase } from "@/db/driver";
 import { serverError } from "@/lib/server_utils";
-import { fromFormData, signToken } from "@/lib/utils";
+import { fromFormData } from "@/lib/utils";
 import { LoginUserZodSchema } from "@/types/user";
 import { redirect } from "next/navigation";
 import bcrypt from "bcrypt";
 import User from "@/model/users";
 import { cookies } from 'next/headers';
 import { TOKEN_VALIDATION_INTERVAL } from "@/const";
+import { signToken } from "@/lib/token";
 export type LoginActionServerSideState = {
     apiError?: string;
 }
@@ -41,7 +42,7 @@ export async function LoginAction(prevState: LoginActionServerSideState, formDat
             const userInfo = {
                 id: user._id.toString(),
                 email: user.email,
-                name: user.name,
+                name: user.username,
             }
             const tokenValue = await signToken(userInfo);
 

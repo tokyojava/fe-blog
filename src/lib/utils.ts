@@ -1,21 +1,23 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-import * as jose from "jose";
-import { JWT_SECRET, TOKEN_VALIDATION_INTERVAL } from "@/const";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function toFormData(data: Record<string, string>) {
+export function toFormData(data: Record<string, string | string[]>) {
   const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
-    formData.append(key, value as string);
+    if (Array.isArray(value)) {
+      value.forEach((v) => formData.append(key, v));
+    } else {
+      formData.append(key, value);
+    }
   });
   return formData;
 }
 
-export function fromFormData(formData: FormData): Record<string, string> {
+export function fromFormData(formData: FormData): Record<string, string | string[]> {
   const data: Record<string, string> = {};
   formData.forEach((value, key) => {
     data[key] = value as string;
@@ -23,22 +25,3 @@ export function fromFormData(formData: FormData): Record<string, string> {
   return data;
 }
 
-export async function signToken(payload: any) {
-  const token = await new jose.SignJWT(payload)
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime(TOKEN_VALIDATION_INTERVAL + "d") // 7天后过期
-    .sign(JWT_SECRET);
-  return token;
-}
-
-// ✅ 验证 token
-export async function verifyToken(token: string) {
-  try {
-    const { payload } = await jose.jwtVerify(token, JWT_SECRET);
-    return payload;
-  } catch (err) {
-    console.error("Invalid token", err);
-    return null;
-  }
-}

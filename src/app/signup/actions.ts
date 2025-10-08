@@ -29,7 +29,7 @@ export async function SignUpAction(prevState: SignUpActionServerSideState, formD
         return { apiError: undefined };
     } else {
         return {
-            apiError: undefined
+            apiError: "Invalid input data, this should not happen"
         };
     }
 }

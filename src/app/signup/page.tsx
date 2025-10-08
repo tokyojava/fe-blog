@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
-import MyInputFormField from "@/components/ui/my_input_form_field";
+import { MyInputFormField } from "@/components/ui/my_form_elements";
 import { toFormData } from "@/lib/utils";
 import { CreateEmailUserRequest, CreateEmailUserZodSchema } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";

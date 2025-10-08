@@ -34,10 +34,10 @@
 | `title`         | String     | Article title                                |
 | `content`       | [String]   | Article content (in Markdown format). The frontend may create multiple Markdown blocks, so an array is used |
 | `summary`       | String     | AI-generated summary of the article          |
+| `category`          | [String]   | Category  |
 | `tags`          | [String]   | Article tags (AI-generated or user-defined)  |
 | `type`          | String     | Article type (`blog` for public or `diary` for private) |
 | `author_id`     | ObjectId   | Author ID (linked to the `users` table)      |
-| `is_public`     | Boolean    | Whether the article is public (`true` for public, `false` for private) |
 | `created_at`    | Date       | Article creation time                        |
 | `updated_at`    | Date       | Last update time for the article             |
 

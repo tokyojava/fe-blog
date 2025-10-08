@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "./lib/utils";
+import { verifyToken } from "./lib/token";
 import { serverError } from "./lib/server_utils";
 
 function needAuth(path: string) {

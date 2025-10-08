@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { LoginAction } from "./actions";
 import { toFormData } from "@/lib/utils";
 import Link from "next/link";
-import MyInputFormField from "@/components/ui/my_input_form_field";
+import { MyInputFormField } from "@/components/ui/my_form_elements";
 import { Form } from "@/components/ui/form";
 
 const initialState = {
