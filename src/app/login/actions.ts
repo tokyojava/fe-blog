@@ -1,12 +1,13 @@
 "use server";
 import { connectToDatabase } from "@/db/driver";
 import { serverError } from "@/lib/server_utils";
-import { fromFormData } from "@/lib/utils";
+import { fromFormData, signToken } from "@/lib/utils";
 import { LoginUserZodSchema } from "@/types/user";
 import { redirect } from "next/navigation";
 import bcrypt from "bcrypt";
 import User from "@/model/users";
-
+import { cookies } from 'next/headers';
+import { TOKEN_VALIDATION_INTERVAL } from "@/const";
 export type LoginActionServerSideState = {
     apiError?: string;
 }
@@ -22,7 +23,9 @@ export async function LoginAction(prevState: LoginActionServerSideState, formDat
             // Find user by email
             const user = await User.findOne({ email: result.data.email });
             if (!user) {
-                return { apiError: "Email or Password is incorrect" };
+                return {
+                    apiError: "Email or Password is incorrect"
+                };
             }
 
             // Verify password
@@ -30,17 +33,33 @@ export async function LoginAction(prevState: LoginActionServerSideState, formDat
             if (!isPasswordValid) {
                 return { apiError: "Email or Password is incorrect" };
             }
+
+            console.log("Login successful");
+
+            const cookieStore = await cookies();
+
+            const userInfo = {
+                id: user._id.toString(),
+                email: user.email,
+                name: user.name,
+            }
+            const tokenValue = await signToken(userInfo);
+
+            cookieStore.set('token', tokenValue, {
+                httpOnly: true, // Recommended for security
+                // secure: process.env.NODE_ENV === 'production', // Use secure in production
+                maxAge: 60 * 60 * 24 * TOKEN_VALIDATION_INTERVAL - 600, // 7 days in seconds minus some buffer
+                path: '/',
+            });
         } catch (e: unknown) {
             serverError(e);
             return { apiError: "Internal server error" };
         }
-        console.log("Login successful");
-        // Redirect to dashboard or home page after successful login
-        redirect('/dashboard');
-        return { apiError: undefined };
+        redirect('/dashboard'); // Redirect to home page after login
     } else {
+        serverError(result.error);
         return {
-            apiError: undefined
+            apiError: "Unknown reason, should not happen"
         };
     }
 }

@@ -31,7 +31,7 @@ export default function SignupPage() {
     const values = form.watch(); // 使表单状态可响应式更新
     useEffect(() => {
         serverState.apiError = undefined;
-    }, [values]);
+    }, [serverState, values]);
 
     const submit = useCallback(async (data: CreateEmailUserRequest) => {
         startTransition(async () => {

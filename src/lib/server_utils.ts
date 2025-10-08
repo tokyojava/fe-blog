@@ -6,5 +6,8 @@ export function handleErrorResponse(e: unknown) {
 }
 
 export function serverError(e: unknown) {
+  if (e instanceof Error) {
+    console.log(e.stack)
+  }
   console.error(e);
 }
