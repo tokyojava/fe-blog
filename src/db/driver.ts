@@ -13,6 +13,7 @@ export async function connectToDatabase() {
     }
 
     if (!cached.promise) {
+        console.log("Env MONGO_URI:", process.env.MONGO_URI);
         cached.promise = mongoose.connect(process.env.MONGO_URI!, {
             bufferCommands: true,
             timeoutMS: 12000,
