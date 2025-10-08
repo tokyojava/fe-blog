@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldGroup } from "@/components/ui/field";
-import { Form } from "@/components/ui/form";
-import { MyInputFormField, MySelectFormField } from "@/components/ui/my_form_elements";
+import { Form, FormLabel } from "@/components/ui/form";
+import { MyInputFormField, MySelectFormField, MyTextAreaFormField } from "@/components/ui/my_form_elements";
 import { techGroups } from "@/const";
 import { toFormData } from "@/lib/utils";
 import { CreatePostRequest, CreatePostZodSchema } from "@/types/post";
@@ -12,6 +12,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { CreatePostAction, CreatePostActionServerSideState } from "./action";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Edit, Eye } from "lucide-react";
+import Markdown from "@/components/business/markdown";
 
 const initialState: CreatePostActionServerSideState = {
     apiError: undefined
@@ -40,6 +43,8 @@ export default function CreateBlogPage() {
         });
     }, [action]);
 
+    const content = form.watch("content");
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(submit)}>
@@ -62,8 +67,31 @@ export default function CreateBlogPage() {
                                 placeholder="Select a category"
                                 groups={techGroups}
                             />
+
+
+                            <FormLabel className="mb-[-16px]">Content</FormLabel>
+                            <Tabs defaultValue="edit">
+                                <TabsList>
+                                    <TabsTrigger value="edit"><Edit /> Edit</TabsTrigger>
+                                    <TabsTrigger value="preview"><Eye /> Preview</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="edit">
+                                    <MyTextAreaFormField
+                                        form={form}
+                                        name={"content"}
+                                        noLabel
+                                        className="h-[600px]"
+                                        placeholder="Enter blog content in markdown"
+                                    />
+                                </TabsContent>
+                                <TabsContent value="preview" className="max-h-[600px]">
+                                    <Markdown content={content} className="h-[600px]" />
+                                </TabsContent>
+                            </Tabs>
+
+
                             <Field>
-                                <Button type="submit">Create Post</Button>
+                                <Button type="submit" className="w-[80px]">Create Post</Button>
                             </Field>
                         </FieldGroup>
                     </CardContent>

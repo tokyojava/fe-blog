@@ -9,14 +9,21 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./command";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { Textarea } from "./textarea";
 
 type MyBaseFormFieldProps<T extends FieldValues> = {
     form: ReturnType<typeof useForm<T>>;
     name: Path<T>;
-    label: string;
+    label?: string;
+    noLabel?: boolean;
+    className?: string;
 }
 
 type MyInputFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> & {
+    placeholder?: string;
+}
+
+type MyTextAreaFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> & {
     placeholder?: string;
 }
 
@@ -41,6 +48,26 @@ export function MyInputFormField<T extends FieldValues>({ form, name, label, pla
                         <FormLabel>{label}</FormLabel>
                         <FormControl>
                             <Input placeholder={placeholder} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </Field>
+    )
+}
+
+export function MyTextAreaFormField<T extends FieldValues>({ className, noLabel, form, name, label, placeholder }: MyTextAreaFormFieldProps<T>) {
+    return (
+        <Field>
+            <FormField
+                control={form.control}
+                name={name}
+                render={({ field }) => (
+                    <FormItem>
+                        {noLabel ? null : <FormLabel>{label}</FormLabel>}
+                        <FormControl>
+                            <Textarea className={className} placeholder={placeholder} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -154,3 +181,4 @@ export function MySelectFormField<T extends FieldValues>({ form, name, label, pl
 
     );
 }
+
