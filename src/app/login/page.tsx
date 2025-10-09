@@ -14,10 +14,6 @@ import { useCallback, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { LoginAction } from "./actions";
 
-const initialState = {
-    apiError: undefined
-};
-
 export default function LoginPage() {
     const form = useForm({
         resolver: zodResolver(EmailLoginUserZodSchema),

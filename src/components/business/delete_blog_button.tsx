@@ -26,7 +26,7 @@ export function DeleteBlogButton({ blogId, redirectToBlogPage }: { blogId: strin
             }
 
         });
-    }, [blogId]);
+    }, [blogId, router, redirectToBlogPage]);
 
     return <Button onClick={handleClick} className="cursor-pointer" type='submit' variant="destructive">
         {isPending ? "Deleting..." : "Delete"}

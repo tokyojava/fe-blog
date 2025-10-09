@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchUser, serverError } from "./server_utils";
 import { redirect } from "next/navigation";
-import { toast } from "sonner";
 
 export type APISuccess<T> = {
     data: T;

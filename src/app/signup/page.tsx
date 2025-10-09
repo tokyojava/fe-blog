@@ -46,7 +46,7 @@ export default function SignupPage() {
                 setApiError(result.error.message);
             }
         });
-    }, []);
+    }, [router]);
 
     return (
         <div className={"w-full h-full relative"}>
