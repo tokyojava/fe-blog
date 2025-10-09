@@ -5,18 +5,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { MyInputFormField } from "@/components/ui/my_form_elements";
-import { toFormData } from "@/lib/utils";
 import { CreateEmailUserRequest, CreateEmailUserZodSchema } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { startTransition, useActionState, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { SignUpAction } from "./actions";
-const initialState = {
-    apiError: undefined
-}
+import { signUpAction } from "./actions";
+import { toast } from "sonner";
+import { ActionAPIResponse } from "@/lib/api";
 
 export default function SignupPage() {
+    const router = useRouter();
     const form = useForm<CreateEmailUserRequest>({
         resolver: zodResolver(CreateEmailUserZodSchema),
         defaultValues: {
@@ -26,19 +26,27 @@ export default function SignupPage() {
         }
     })
 
-    const [serverState, action, pending] = useActionState(SignUpAction, initialState);
+    const [apiError, setApiError] = useState("");
 
-    const values = form.watch(); // 使表单状态可响应式更新
+    // clear Api error if there are new user interactions
+    const values = form.watch();
     useEffect(() => {
-        serverState.apiError = undefined;
-    }, [serverState, values]);
+        setApiError("");
+    }, [values.email, values.password, values.username]);
+
+    const [isPending, startTransition] = useTransition();
 
     const submit = useCallback(async (data: CreateEmailUserRequest) => {
         startTransition(async () => {
-            const formData = toFormData(data as Record<string, string>);
-            await action(formData);
+            const result = (await signUpAction(data)) as ActionAPIResponse<null>;
+            if (result.success) {
+                toast.success("Sign up successful! Please log in.");
+                router.push('/login');
+            } else {
+                setApiError(result.error.message);
+            }
         });
-    }, [action]);
+    }, []);
 
     return (
         <div className={"w-full h-full relative"}>
@@ -59,11 +67,11 @@ export default function SignupPage() {
                             <FieldGroup>
                                 <MyInputFormField form={form} name="username" label="Your username" placeholder="Your username" /> {/* 使用自定义组件 */}
                                 <MyInputFormField form={form} name="email" label="Email" placeholder="Your email" /> {/* 使用自定义组件 */}
-                                <MyInputFormField form={form} name="password" label="Password" placeholder="Your password" /> {/* 使用自定义组件 */}
-                                {serverState.apiError && <div className="text-red-500 text-center">{serverState.apiError}</div>}
+                                <MyInputFormField isPassword form={form} name="password" label="Password" placeholder="Your password" /> {/* 使用自定义组件 */}
+                                {apiError && <div className="text-red-500 text-center">{apiError}</div>}
                                 <Field>
-                                    <Button disabled={pending} type="submit">
-                                        {pending ? "Signing up..." : "Sign Up"}
+                                    <Button disabled={isPending} type="submit">
+                                        {isPending ? "Signing up..." : "Sign Up"}
                                     </Button>
                                 </Field>
                             </FieldGroup>

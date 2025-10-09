@@ -68,10 +68,25 @@ export async function getBlogById(id: string) {
   }
 }
 
-export async function getMyBlogs(authorId: string) {
+export interface GetBlogsOptions {
+  author?: string;
+  limit?: number;
+  beforeDate?: Date;
+}
+
+export async function getBlogs(options: GetBlogsOptions = {}) {
   try {
-    const blogs = await BlogModel.find({ author: authorId })
+    const query: any = {};
+    if (options.author) {
+      query.author = options.author;
+    }
+    if (options.beforeDate) {
+      query.created_at = { $lt: options.beforeDate };
+    }
+
+    const blogs = await BlogModel.find(query)
       .sort({ created_at: -1 })
+      .limit(options.limit || 5)
       .populate('author')
       .lean<PopulatedBlog[]>();
     return blogs;

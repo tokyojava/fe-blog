@@ -8,7 +8,8 @@ import { notFound } from "next/navigation";
 import { formatReadableTime } from "@/lib/utils";
 import { connectToDatabase } from "@/db/driver";
 import Markdown from "@/components/business/markdown";
-import { NotebookText, Rss } from "lucide-react";
+import { Delete, NotebookText, Rss } from "lucide-react";
+import { DeleteBlogButton } from "@/components/business/delete_blog_button";
 
 export default async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -49,9 +50,8 @@ export default async function BlogPage({ params }: { params: Promise<{ id: strin
                 <CardContent>
                     <Markdown className="border-0" content={blog.content} />
                     <div className="flex items-center space-x-4 mt-6">
-                        <Button variant="secondary">Promote</Button>
                         <Button variant="outline">Edit</Button>
-                        <Button variant="destructive">Delete</Button>
+                        <DeleteBlogButton blogId={blog._id.toString()} redirectToBlogPage />
                     </div>
                 </CardContent>
             </Card>

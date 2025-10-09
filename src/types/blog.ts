@@ -7,7 +7,7 @@ export const constraints = {
     },
     content: {
         minLength: 10,
-        maxLength: 1000,
+        maxLength: 10000,
     },
 };
 

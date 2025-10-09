@@ -3,15 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldGroup } from "@/components/ui/field";
-import { LoginUserZodSchema } from "@/types/user";
+import { Form } from "@/components/ui/form";
+import { MyInputFormField } from "@/components/ui/my_form_elements";
+import { ActionAPIResponse } from "@/lib/api";
+import { EmailLoginUserRequest, EmailLoginUserZodSchema } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { startTransition, useActionState, useCallback } from "react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { useCallback, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { LoginAction } from "./actions";
-import { toFormData } from "@/lib/utils";
-import Link from "next/link";
-import { MyInputFormField } from "@/components/ui/my_form_elements";
-import { Form } from "@/components/ui/form";
 
 const initialState = {
     apiError: undefined
@@ -19,21 +20,27 @@ const initialState = {
 
 export default function LoginPage() {
     const form = useForm({
-        resolver: zodResolver(LoginUserZodSchema),
+        resolver: zodResolver(EmailLoginUserZodSchema),
         defaultValues: {
             email: "a@a.com",
             password: "11111111",
         }
     });
 
-    const [serverState, action, pending] = useActionState(LoginAction, initialState);
+    const [isPending, startTransition] = useTransition();
 
-    const submit = useCallback(async (data: Record<string, string>) => {
+    const [apiError, setApiError] = useState("");
+
+    const submit = useCallback(async (data: EmailLoginUserRequest) => {
         startTransition(async () => {
-            const formData = toFormData(data);
-            await action(formData);
+            const result = (await LoginAction(data)) as ActionAPIResponse<null>;
+            if (result.error) {
+                setApiError(result.error.message);
+            } else {
+                redirect("/blogs");
+            }
         });
-    }, [action]);
+    }, []);
 
     return (
         <div className={"w-full h-full relative"}>
@@ -53,10 +60,10 @@ export default function LoginPage() {
                             <FieldGroup>
                                 <MyInputFormField form={form} name="email" label="Email" placeholder="Your email" /> {/* 使用自定义组件 */}
                                 <MyInputFormField form={form} name="password" label="Password" placeholder="Your password" /> {/* 使用自定义组件 */}
-                                {serverState.apiError && <div className="text-red-500 text-center">{serverState.apiError}</div>}
+                                {apiError && <div className="text-red-500 text-center">{apiError}</div>}
                                 <Field>
-                                    <Button disabled={pending} type="submit">
-                                        {pending ? "Logging in..." : "Log In"}
+                                    <Button disabled={isPending} type="submit">
+                                        {isPending ? "Logging in..." : "Log In"}
                                     </Button>
                                 </Field>
                             </FieldGroup>

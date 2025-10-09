@@ -1,36 +1,22 @@
 "use server";
 import { connectToDatabase } from "@/db/driver";
-import { AlreadyInUseError } from "@/lib/custom_errors";
-import { serverError } from "@/lib/server_utils";
-import { fromFormData } from "@/lib/utils";
+import { API_ERRORS, APIException, handleApi } from "@/lib/api";
 import { createEmailPasswordUser } from "@/model/users";
-import { CreateEmailUserZodSchema } from "@/types/user";
-import { redirect } from "next/navigation";
+import { CreateEmailUserRequest, CreateEmailUserZodSchema } from "@/types/user";
 
-export type SignUpActionServerSideState = {
-    apiError?: string;
-}
 
-export async function SignUpAction(prevState: SignUpActionServerSideState, formData: FormData): Promise<SignUpActionServerSideState> {
-    const obj = fromFormData(formData);
-    const result = await CreateEmailUserZodSchema.safeParseAsync(obj);
-    if (result.success) {
-        try {
+export async function signUpAction(req: CreateEmailUserRequest) {
+    return handleApi({
+        handler: async () => {
+            const result = await CreateEmailUserZodSchema.safeParseAsync(req);
             await connectToDatabase();
-            await createEmailPasswordUser(result.data);
-        } catch (e: unknown) {
-            serverError(e);
-            if (e instanceof AlreadyInUseError) {
-                return { apiError: e.message };
+            if (result.success) {
+                await createEmailPasswordUser(result.data);
+            } else {
+                throw new APIException(API_ERRORS.SERVER_SIDE_VALIDATION_ERROR);
             }
-            return { apiError: "Internal server error" };
-        }
-
-        redirect('/login');
-        return { apiError: undefined };
-    } else {
-        return {
-            apiError: "Invalid input data, this should not happen"
-        };
-    }
+        },
+        isServerAction: true,
+        skipUserValidation: true,
+    });
 }

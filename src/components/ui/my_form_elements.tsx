@@ -17,6 +17,7 @@ type MyBaseFormFieldProps<T extends FieldValues> = {
 
 type MyInputFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> & {
     placeholder?: string;
+    isPassword?: boolean;
 }
 
 type MyTextAreaFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> & {
@@ -33,7 +34,7 @@ type MySelectFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> & {
     groups: KeyValuePairGroup[];
 }
 
-export function MyInputFormField<T extends FieldValues>({ form, name, label, placeholder }: MyInputFormFieldProps<T>) {
+export function MyInputFormField<T extends FieldValues>({ isPassword, form, name, label, placeholder }: MyInputFormFieldProps<T>) {
     return (
         <Field>
             <FormField
@@ -43,7 +44,7 @@ export function MyInputFormField<T extends FieldValues>({ form, name, label, pla
                     <FormItem>
                         <FormLabel>{label}</FormLabel>
                         <FormControl>
-                            <Input placeholder={placeholder} {...field} />
+                            <Input type={isPassword ? "password" : "text"} placeholder={placeholder} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>

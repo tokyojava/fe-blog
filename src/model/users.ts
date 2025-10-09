@@ -1,7 +1,7 @@
 import { constraints, type CreateEmailUserRequest, type User } from '@/types/user';
 import mongoose, { Schema } from 'mongoose';
 import { hashPassword } from '@/lib/password';
-import { AlreadyInUseError } from '@/lib/custom_errors';
+import { API_ERRORS, APIException } from '@/lib/api';
 
 export interface IUser extends Document {
   username: string;
@@ -67,7 +67,7 @@ export async function createEmailPasswordUser(req: CreateEmailUserRequest) {
   // 检查是否已存在相同 email 的用户
   const existingUser = await UserModel.findOne({ email: req.email });
   if (existingUser) {
-    throw new AlreadyInUseError();
+    throw new APIException(API_ERRORS.EMAIL_ALREADY_IN_USE);
   }
 
   const hashedPassword = await hashPassword(req.password);

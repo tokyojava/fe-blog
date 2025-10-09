@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Filter } from "lucide-react";
 import { techGroups } from "@/const";
-import { getMyBlogs, type PopulatedBlog } from "@/model/blogs";
+import { getBlogs, type PopulatedBlog } from "@/model/blogs";
 import { formatReadableTime } from "@/lib/utils";
 import { connectToDatabase } from "@/db/driver";
 import CreateBlogButton from "@/components/business/create_new_blog";
@@ -12,7 +12,8 @@ import { fetchUser } from "@/lib/server_utils";
 import { redirect } from "next/navigation";
 import { SingleSelect } from "@/components/business/single-select";
 import Link from "next/link";
-import { deleteBlogAction } from "./action";
+import { DeleteBlogButton } from "@/components/business/delete_blog_button";
+import { type TokenPayload } from "@/lib/token";
 
 export default async function BlogsPage() {
     await connectToDatabase();
@@ -20,7 +21,7 @@ export default async function BlogsPage() {
     if (!me) {
         redirect("/login");
     }
-    const blogs = await getMyBlogs(me.id);
+    const blogs = await getBlogs({ author: me.id });
 
     return (
         <div className="p-6">
@@ -61,7 +62,7 @@ export default async function BlogsPage() {
             {/* Problems List */}
             <div className="space-y-4">
                 {blogs.map((blog) => (
-                    <BlogCard key={blog._id} blog={blog} />
+                    <BlogCard key={blog._id} blog={blog} currentUser={me} />
                 ))}
                 {blogs.length === 0 && (
                     <div className="text-center text-gray-500">
@@ -73,7 +74,7 @@ export default async function BlogsPage() {
     );
 }
 
-function BlogCard({ blog }: { blog: PopulatedBlog }) {
+function BlogCard({ blog, currentUser }: { blog: PopulatedBlog, currentUser: TokenPayload }) {
     return (
         <Card>
             <CardHeader className="flex items-center justify-between">
@@ -100,10 +101,9 @@ function BlogCard({ blog }: { blog: PopulatedBlog }) {
                     <Button variant="outline">Edit</Button>
                     <Button variant="secondary">Promote</Button>
                 </div>
-                <form action={deleteBlogAction}>
-                    <input type="hidden" name="id" value={blog._id.toString()} />
-                    <Button className="cursor-pointer" type='submit' variant="destructive">Delete</Button>
-                </form>
+                <DeleteBlogButton
+                    blogId={blog._id.toString()}
+                    isMyBlog={blog.author._id.toString() === currentUser.id.toString()} />
             </CardContent>
         </Card>
     )

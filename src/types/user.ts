@@ -35,7 +35,7 @@ const userZodSchema = z.object({
 export const CreateEmailUserZodSchema = userZodSchema.omit({ third_party_id: true, auth_type: true });
 export const CreateThirdPartyUserZodSchema = userZodSchema.omit({ email: true, password: true, auth_type: true });
 
-export const LoginUserZodSchema = z.object({
+export const EmailLoginUserZodSchema = z.object({
     email: z.email({
         message: "Invalid email address",
         pattern: constraints.emailPattern,
@@ -46,3 +46,4 @@ export const LoginUserZodSchema = z.object({
 export type User = z.infer<typeof userZodSchema>;
 export type CreateEmailUserRequest = z.infer<typeof CreateEmailUserZodSchema>;
 export type CreateThirdPartyUserRequest = z.infer<typeof CreateThirdPartyUserZodSchema>;
+export type EmailLoginUserRequest = z.infer<typeof EmailLoginUserZodSchema>;
