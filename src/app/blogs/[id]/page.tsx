@@ -10,6 +10,7 @@ import { connectToDatabase } from "@/db/driver";
 import Markdown from "@/components/business/markdown";
 import { NotebookText, Rss } from "lucide-react";
 import { DeleteBlogButton } from "@/components/business/delete_blog_button";
+import BlogCategoryTypeInfo from "@/components/business/blog_category_type_info";
 
 export default async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -27,20 +28,7 @@ export default async function BlogPage({ params }: { params: Promise<{ id: strin
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold">{blog.title}</CardTitle>
                     <div className="w-full flex align-center justify-between">
-                        <div className="flex align-center space-x-4">
-                            <Badge variant="default">{blog.category}</Badge>
-                            <span className="flex items-center space-x-2">
-                                {blog.category === "Blog" ? (
-                                    <>
-                                        <Rss /> <span className="ml-[-4px]">Blog</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <NotebookText /> <span className="ml-[-4px]">Diary</span>
-                                    </>
-                                )}
-                            </span>
-                        </div>
+                        <BlogCategoryTypeInfo blog={blog} />
                         <div className="flex align-center space-x-4">
                             <span className="text-blue-500">By {blog.author.username}</span>
                             <span className="text-gray-500">{formatReadableTime(blog.updated_at)}</span>

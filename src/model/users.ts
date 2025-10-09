@@ -100,4 +100,8 @@ export async function removeTestUsers() {
   });
 }
 
+export async function removeAllUsers() {
+  await UserModel.deleteMany({});
+} 
+
 export default UserModel;

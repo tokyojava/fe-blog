@@ -15,23 +15,32 @@ export interface CommandedBasedSelectProps {
     groups: KeyValuePairGroup[];
     placeholder: string;
     multiple?: boolean;
+    maxSelections?: number;
+    defaultValue?: string | string[];
     onChange?: (value: string | string[]) => void;
 }
 
-export function CommandedBasedSelect(props: CommandedBasedSelectProps) {
-    const [selectedValues, setSelectedValues] = useState<string[]>([]);
+export function CommandBasedSelect(props: CommandedBasedSelectProps) {
+    const [selectedValues, setSelectedValues] = useState<string[]>(props.defaultValue ? (Array.isArray(props.defaultValue) ? props.defaultValue : [props.defaultValue]) : []);
     const [open, setOpen] = useState(false);
 
-    const { groups, placeholder, multiple = false, onChange = () => {} } = props;
+    const { groups, placeholder, multiple = false, maxSelections, onChange = () => {} } = props;
     const flattenedPairs = useMemo(() => groups.flatMap((group) => group.pairs), [groups]);
 
     const handleSelect = (currentValue: string) => {
         if (multiple) {
-            const newValues = selectedValues.includes(currentValue)
-                ? selectedValues.filter((value) => value !== currentValue)
-                : [...selectedValues, currentValue];
-            setSelectedValues(newValues);
-            onChange(newValues);
+            if (selectedValues.includes(currentValue)) {
+                const newValues = selectedValues.filter((value) => value !== currentValue);
+                setSelectedValues(newValues);
+                onChange(newValues);
+            } else {
+                if (maxSelections && selectedValues.length >= maxSelections) {
+                    return; // 超过最大选择数量时直接返回
+                }
+                const newValues = [...selectedValues, currentValue];
+                setSelectedValues(newValues);
+                onChange(newValues);
+            }
         } else {
             const newValue = currentValue === selectedValues[0] ? "" : currentValue;
             setSelectedValues(newValue ? [newValue] : []);

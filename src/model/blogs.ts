@@ -10,7 +10,7 @@ export interface IBlog extends Document {
   summary?: string;
   tags?: string[];
   type: 'blog' | 'diary';
-  category: string;
+  category: string[];
   author: mongoose.Types.ObjectId;
   is_public: boolean;
   created_at: Date;
@@ -24,7 +24,7 @@ const blogSchema: Schema = new Schema<IBlog>({
   summary: { type: String },
   tags: { type: [String] },
   type: { type: String, enum: ['blog', 'diary'], required: true },
-  category: { type: String, required: true },
+  category: { type: [String], required: true },
   author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   is_public: { type: Boolean, default: true },
   created_at: { type: Date, default: Date.now },
@@ -40,7 +40,6 @@ blogSchema.index({ tags: 1 });
 const BlogModel = mongoose.models.Blog || mongoose.model('Blog', blogSchema);
 
 export async function createBlog(req: CreateBlogRequest & { author: string }) {
-  debugger;
   const newBlog = new BlogModel({
     title: req.title,
     content: req.content,
@@ -71,6 +70,8 @@ export async function getBlogById(id: string) {
 export interface GetBlogsOptions {
   author?: string;
   limit?: number;
+  category?: string[];
+  type?: IBlog['type'];
   beforeDate?: Date;
 }
 
@@ -83,6 +84,13 @@ export async function getBlogs(options: GetBlogsOptions = {}) {
     if (options.beforeDate) {
       query.created_at = { $lt: options.beforeDate };
     }
+    if (options.category && options.category.length > 0) {
+      query.category = { $in: options.category };
+    }
+    if (options.type) {
+      query.type = options.type;
+    }
+    console.log("query", options);
 
     const blogs = await BlogModel.find(query)
       .sort({ created_at: -1 })
@@ -104,6 +112,10 @@ export async function deleteBlog(id: string) {
     serverError(e);
     throw e;
   }
+}
+
+export async function removeAllBlogs() {
+  await BlogModel.deleteMany({});
 } 
 
 export default BlogModel;

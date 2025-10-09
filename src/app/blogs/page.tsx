@@ -1,59 +1,35 @@
+import BlogCategoryTypeInfo from "@/components/business/blog_category_type_info";
+import { BlogsFiltersSection } from "@/components/business/blogs_filters_section";
+import CreateBlogButton from "@/components/business/create_new_blog";
+import { DeleteBlogButton } from "@/components/business/delete_blog_button";
+import { withUser } from "@/components/business/with_user";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Filter } from "lucide-react";
-import { techGroups } from "@/const";
-import { getBlogs, type PopulatedBlog } from "@/model/blogs";
-import { formatReadableTime } from "@/lib/utils";
-import CreateBlogButton from "@/components/business/create_new_blog";
-import { CommandedBasedSelect } from "@/components/business/command-based-select";
-import Link from "next/link";
-import { DeleteBlogButton } from "@/components/business/delete_blog_button";
 import { type TokenPayload } from "@/lib/token";
-import { withUser } from "@/components/business/with_user";
+import { formatReadableTime } from "@/lib/utils";
+import { getBlogs, type IBlog, type PopulatedBlog } from "@/model/blogs";
+import Link from "next/link";
 
-export default withUser(BlogPage);
+export default withUser(BlogsPage);
 
-async function BlogPage(props: { user: TokenPayload }) {
-    const { user } = props;
-    const blogs = await getBlogs({ author: user.id });
+interface BlogPageProps {
+    user: TokenPayload;
+    searchParams: {
+        category?: string[];
+        type?: IBlog['type'];
+    };
+}
+
+async function BlogsPage(props: BlogPageProps) {
+    const { user, searchParams } = props;
+
+    const params = await searchParams;
+    const blogs = await getBlogs({ author: user.id, ...params });
     return (
         <div className="p-6">
             <CreateBlogButton />
-
             {/* Filters Section */}
-            <div className="border rounded-lg p-4 mb-6 bg-white shadow-sm">
-                <div className="flex items-center mb-4">
-                    <span className="flex items-center text-gray-600 text-sm font-medium">
-                        <Filter className="h-4 w-4 mr-2" />
-                        Filters
-                    </span>
-                </div>
-                <div className="flex items-center space-x-4">
-                    <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-500 mb-2">Type</span>
-                        <Select>
-                            <SelectTrigger>
-                                <SelectValue className="text-black" placeholder="All" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All</SelectItem>
-                                <SelectItem value="blog">Blog</SelectItem>
-                                <SelectItem value="diary">Diary</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-500 mb-2">Category</span>
-                        <CommandedBasedSelect
-                            groups={techGroups}
-                            placeholder="All"
-                            multiple
-                        />
-                    </div>
-                </div>
-            </div>
+            <BlogsFiltersSection />
 
             {/* Problems List */}
             <div className="space-y-4">
@@ -82,10 +58,7 @@ function BlogCard({ blog }: { blog: PopulatedBlog }) {
                         <span>{formatReadableTime(blog.updated_at)}</span>
                     </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                    <Badge variant="secondary">JavaScript</Badge>
-                    <Badge variant="secondary">Mine</Badge>
-                </div>
+                <BlogCategoryTypeInfo blog={blog} />
             </CardHeader>
             <CardContent className="flex items-center justify-between">
                 <div className="flex space-x-2">
@@ -95,7 +68,6 @@ function BlogCard({ blog }: { blog: PopulatedBlog }) {
                         </Link>
                     </Button>
                     <Button variant="outline">Edit</Button>
-                    <Button variant="secondary">Promote</Button>
                 </div>
                 <DeleteBlogButton
                     blogId={blog._id.toString()}

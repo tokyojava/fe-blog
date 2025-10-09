@@ -20,9 +20,7 @@ export const CreateBlogZodSchema = z.object({
         .max(constraints.content.maxLength, `Content must be at most ${constraints.content.maxLength} characters long`),
     tags: z.array(z.string()).optional(),
     summary: z.string().optional(),
-    category: z.string({
-        message: "Category is required"
-    }),
+    category: z.array(z.string(), "Category cannot be empty"),
     type: z.enum(['blog', 'diary'], "Type must be either 'Blog' or 'Diary'"),
 });
 
