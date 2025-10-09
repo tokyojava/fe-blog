@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { fetchUser, serverError } from "./server_utils";
 import { redirect } from "next/navigation";
+import { connectToDatabase } from "@/db/driver";
+import { TokenPayload } from "./token";
 
 export type APISuccess<T> = {
     data: T;
@@ -16,7 +18,7 @@ export type APIError = {
         message: string;
     }
 }
- 
+
 export type APIResponse<T> = NextResponse<APISuccess<T>> | NextResponse<APIError>;
 export type ActionAPIResponse<T> = APISuccess<T> | APIError;
 
@@ -72,34 +74,40 @@ export const API_ERRORS = {
 }
 
 
-export interface ActionApiHandler<T> {
-    handler: () => Promise<T>;
-    isServerAction: boolean;
+export interface ApiHandler<T> {
+    handler: (user: TokenPayload | null) => Promise<T>;
     skipUserValidation: boolean;
 }
 
-export async function handleApi<T>(options: ActionApiHandler<T>) {
+async function handleApiBase<T>(options: ApiHandler<T>, responseWrapper: (result: APISuccess<T> | APIError) => any) {
+    let user: TokenPayload | null = null;
     try {
+
+        // Make sure to connect to database first
+        await connectToDatabase();
+
         if (!options.skipUserValidation) {
-            const user = await fetchUser();
+            user = await fetchUser();
             if (!user) {
-                throw new APIException(API_ERRORS.TOKEN_INVALID, 401);
+                redirect('/login?invalid=true');
             }
         }
 
-        const data = await options.handler();
-        return options.isServerAction ? ok(data) : NextResponse.json(ok(data));
+        const data = await options.handler(user);
+        return responseWrapper(ok(data));
     } catch (e) {
         serverError(e);
         if (e instanceof APIException) {
-            if (e.status === 401) {
-                redirect('/login?invalid=true');
-            }
-
-            return options.isServerAction ? fail(e.code, e.message) : NextResponse.json(fail(e.code, e.message));
+            return responseWrapper(fail(e.code, e.message));
         }
-        return options.isServerAction ?
-            fail(API_ERRORS.INTERNAL_SERVER_ERROR.code, API_ERRORS.INTERNAL_SERVER_ERROR.message)
-            : NextResponse.json(fail(API_ERRORS.INTERNAL_SERVER_ERROR.code, API_ERRORS.INTERNAL_SERVER_ERROR.message));
+        return responseWrapper(fail(API_ERRORS.INTERNAL_SERVER_ERROR.code, API_ERRORS.INTERNAL_SERVER_ERROR.message));
     }
+}
+
+export async function handleActionApi<T>(options: ApiHandler<T>) {
+    return handleApiBase(options, (result) => result);
+}
+
+export async function handleApi<T>(options: ApiHandler<T>) {
+    return handleApiBase(options, (result) => NextResponse.json(result));
 }

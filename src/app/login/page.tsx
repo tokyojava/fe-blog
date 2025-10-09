@@ -55,7 +55,7 @@ export default function LoginPage() {
                         <form onSubmit={form.handleSubmit(submit)}>
                             <FieldGroup>
                                 <MyInputFormField form={form} name="email" label="Email" placeholder="Your email" /> {/* 使用自定义组件 */}
-                                <MyInputFormField form={form} name="password" label="Password" placeholder="Your password" /> {/* 使用自定义组件 */}
+                                <MyInputFormField form={form} isPassword name="password" label="Password" placeholder="Your password" /> {/* 使用自定义组件 */}
                                 {apiError && <div className="text-red-500 text-center">{apiError}</div>}
                                 <Field>
                                     <Button disabled={isPending} type="submit">

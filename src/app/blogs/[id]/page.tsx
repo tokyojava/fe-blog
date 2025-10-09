@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 import { formatReadableTime } from "@/lib/utils";
 import { connectToDatabase } from "@/db/driver";
 import Markdown from "@/components/business/markdown";
-import { Delete, NotebookText, Rss } from "lucide-react";
+import { NotebookText, Rss } from "lucide-react";
 import { DeleteBlogButton } from "@/components/business/delete_blog_button";
 
 export default async function BlogPage({ params }: { params: Promise<{ id: string }> }) {

@@ -5,7 +5,7 @@ import { Input } from "./input";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
 import { Textarea } from "./textarea";
-import { KeyValuePairGroup, SingleSelect } from "../business/single-select";
+import { KeyValuePairGroup, CommandedBasedSelect } from "../business/command-based-select";
 
 type MyBaseFormFieldProps<T extends FieldValues> = {
     form: ReturnType<typeof useForm<T>>;
@@ -116,7 +116,7 @@ export function MySelectFormField<T extends FieldValues>({ form, name, label, pl
                     <FormItem>
                         <FormLabel>{label}</FormLabel>
                         <FormControl>
-                            <SingleSelect
+                            <CommandedBasedSelect
                                 groups={groups}
                                 placeholder={placeholder || "Select an option"}
                                 onChange={(value) => {

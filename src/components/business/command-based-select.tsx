@@ -11,12 +11,12 @@ export type KeyValuePairGroup = {
     pairs: { label: string; value: string }[];
 }
 
-export interface SingleSelectProps {
+export interface CommandedBasedSelectProps {
     groups: KeyValuePairGroup[];
     placeholder: string;
     onChange?: (value: string) => void;
 }
-export function SingleSelect(props: SingleSelectProps) {
+export function CommandedBasedSelect(props: CommandedBasedSelectProps) {
     const [value, setValue] = useState("");
 
     const [open, setOpen] = useState(false);

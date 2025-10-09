@@ -1,51 +1,32 @@
 'use server'
 
-import { connectToDatabase } from "@/db/driver";
-import { fetchUser, serverError } from "@/lib/server_utils";
-import { fromFormData } from "@/lib/utils";
+import { API_ERRORS, APIException, handleActionApi } from "@/lib/api";
+import { serverLog } from "@/lib/server_utils";
+import { TokenPayload } from "@/lib/token";
 import { createBlog } from "@/model/blogs";
 import { CreateBlogRequest, CreateBlogZodSchema } from "@/types/blog";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
-export type CreateBlogActionServerSideState = {
-    apiError?: string;
-}
+export async function CreateBlogAction(req: CreateBlogRequest) {
+    return handleActionApi({
+        handler: async (user: TokenPayload | null) => {
+            const result = await CreateBlogZodSchema.safeParseAsync(req);
 
-export async function CreateBlogAction(prevState: CreateBlogActionServerSideState, formData: FormData) {
-    // 这里可以处理表单数据，例如保存到数据库
-    const obj = fromFormData(formData) as CreateBlogRequest;
-    const result = await CreateBlogZodSchema.safeParseAsync(obj);
+            if (result.success) {
+                let blog = null;
 
-    const user = await fetchUser();
-    if (!user) {
-        // TODO: bug
-        redirect('/login');
-    }
+                blog = await createBlog({
+                    ...result.data,
+                    author: user!.id,
+                });
+                serverLog("blog created", blog);
 
-    if (result.success) {
-        let blog = null;
-        try {
-            await connectToDatabase();
-
-            console.log(obj);            
-            blog = await createBlog({
-                ...obj,
-                author: user.id,
-            });
-
-        } catch (e: unknown) {
-            serverError(e);
-            return {
-                apiError: "Internal server error"
-            };
-        }
-        revalidatePath('/blogs');
-        redirect('/blogs/' + blog._id);
-    } else {
-        return {
-            apiError: "Invalid input data, this should not happen"
-        };
-    }
-    return { success: true };
+                revalidatePath('/blogs');
+                return blog._id.toString();
+            } else {
+                throw new APIException(API_ERRORS.SERVER_SIDE_VALIDATION_ERROR);
+            }
+        },
+        skipUserValidation: false,
+    });
 }

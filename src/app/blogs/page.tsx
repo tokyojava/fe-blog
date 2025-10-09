@@ -6,23 +6,18 @@ import { Filter } from "lucide-react";
 import { techGroups } from "@/const";
 import { getBlogs, type PopulatedBlog } from "@/model/blogs";
 import { formatReadableTime } from "@/lib/utils";
-import { connectToDatabase } from "@/db/driver";
 import CreateBlogButton from "@/components/business/create_new_blog";
-import { fetchUser } from "@/lib/server_utils";
-import { redirect } from "next/navigation";
-import { SingleSelect } from "@/components/business/single-select";
+import { CommandedBasedSelect } from "@/components/business/command-based-select";
 import Link from "next/link";
 import { DeleteBlogButton } from "@/components/business/delete_blog_button";
 import { type TokenPayload } from "@/lib/token";
+import { withUser } from "@/components/business/with_user";
 
-export default async function BlogsPage() {
-    await connectToDatabase();
-    const me = await fetchUser();
-    if (!me) {
-        redirect("/login");
-    }
-    const blogs = await getBlogs({ author: me.id });
+export default withUser(BlogPage);
 
+async function BlogPage(props: { user: TokenPayload }) {
+    const { user } = props;
+    const blogs = await getBlogs({ author: user.id });
     return (
         <div className="p-6">
             <CreateBlogButton />
@@ -51,7 +46,7 @@ export default async function BlogsPage() {
                     </div>
                     <div className="flex flex-col">
                         <span className="text-sm font-medium text-gray-500 mb-2">Category</span>
-                        <SingleSelect
+                        <CommandedBasedSelect
                             groups={techGroups}
                             placeholder="All"
                         />
@@ -62,7 +57,7 @@ export default async function BlogsPage() {
             {/* Problems List */}
             <div className="space-y-4">
                 {blogs.map((blog) => (
-                    <BlogCard key={blog._id} blog={blog} currentUser={me} />
+                    <BlogCard key={blog._id} blog={blog} />
                 ))}
                 {blogs.length === 0 && (
                     <div className="text-center text-gray-500">
@@ -71,10 +66,10 @@ export default async function BlogsPage() {
                 }
             </div>
         </div>
-    );
+    )
 }
 
-function BlogCard({ blog, currentUser }: { blog: PopulatedBlog, currentUser: TokenPayload }) {
+function BlogCard({ blog }: { blog: PopulatedBlog }) {
     return (
         <Card>
             <CardHeader className="flex items-center justify-between">
@@ -103,7 +98,7 @@ function BlogCard({ blog, currentUser }: { blog: PopulatedBlog, currentUser: Tok
                 </div>
                 <DeleteBlogButton
                     blogId={blog._id.toString()}
-                    isMyBlog={blog.author._id.toString() === currentUser.id.toString()} />
+                />
             </CardContent>
         </Card>
     )

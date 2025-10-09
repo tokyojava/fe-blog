@@ -1,5 +1,6 @@
 "use client";
 
+import { BackToList } from "@/components/business/back_to_list";
 import Markdown from "@/components/business/markdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,18 +9,15 @@ import { Form, FormLabel } from "@/components/ui/form";
 import { MyInputFormField, MyRadioGroupFormField, MySelectFormField, MyTextAreaFormField } from "@/components/ui/my_form_elements";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { blogTypes, techGroups } from "@/const";
-import { toFormData } from "@/lib/utils";
+import { ActionAPIResponse } from "@/lib/api";
 import { CreateBlogRequest, CreateBlogZodSchema } from "@/types/blog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, Eye } from "lucide-react";
-import { startTransition, useActionState, useCallback } from "react";
+import { redirect } from "next/navigation";
+import { useCallback, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { CreateBlogAction, CreateBlogActionServerSideState } from "./action";
-import { BackToList } from "@/components/business/back_to_list";
+import { CreateBlogAction } from "./action";
 
-const initialState: CreateBlogActionServerSideState = {
-    apiError: undefined
-}
 
 export default function CreateBlogPage() {
     const form = useForm<CreateBlogRequest>({
@@ -34,15 +32,20 @@ export default function CreateBlogPage() {
         }
     })
 
-    const [serverState, action, pending] = useActionState(CreateBlogAction, initialState);
 
+    const [pending, startTransition] = useTransition();
+    const [apiError, setApiError] = useState("")
 
-    const submit = useCallback(async (data: CreateBlogRequest) => {
+    const submit = useCallback((data: CreateBlogRequest) => {
         startTransition(async () => {
-            const formData = toFormData(data);
-            await action(formData);
+            const result = (await CreateBlogAction(data)) as ActionAPIResponse<string>;
+            if (!result.success) {
+                setApiError(result.error.message);
+            } else {
+                redirect('/blogs/' + result.data); // Redirect to the newly created blog page
+            }
         });
-    }, [action]);
+    }, []);
 
     const content = form.watch("content");
 
@@ -100,7 +103,7 @@ export default function CreateBlogPage() {
                                 </TabsContent>
                             </Tabs>
 
-                            {serverState.apiError && <div className="text-red-500">{serverState.apiError}</div>}
+                            {apiError && <div className="text-red-500">{apiError}</div>}
                             <Field>
                                 <Button
                                     disabled={pending}

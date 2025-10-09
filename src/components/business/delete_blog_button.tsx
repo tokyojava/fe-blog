@@ -7,13 +7,13 @@ import { deleteBlogAction } from "./action";
 import { useRouter } from "next/navigation";
 import { ActionAPIResponse } from "@/lib/api";
 
-export function DeleteBlogButton({ blogId, redirectToBlogPage }: { blogId: string, isMyBlog?: boolean, redirectToBlogPage?: boolean }) {
+export function DeleteBlogButton({ blogId, redirectToBlogPage }: { blogId: string, redirectToBlogPage?: boolean }) {
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
     const handleClick = useCallback(() => {
         startTransition(async () => {
-            const result = (await deleteBlogAction(blogId, redirectToBlogPage ?? false)) as ActionAPIResponse<null>;
+            const result = (await deleteBlogAction(blogId)) as ActionAPIResponse<null>;
             if (result) {
                 if (!result.success) {
                     toast.error("Failed to delete blog");

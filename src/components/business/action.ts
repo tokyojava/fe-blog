@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { deleteBlog } from "@/model/blogs";
 import { revalidatePath } from "next/cache";
-import { handleApi } from "@/lib/api";
+import { handleActionApi } from "@/lib/api";
 
 export async function signOut() {
     const cookieStore = await cookies();
@@ -12,14 +12,13 @@ export async function signOut() {
     redirect('/login');
 }
 
-export const deleteBlogAction = async (blogId: string, redirectToBlogPage: boolean) => {
-    return handleApi({
+export const deleteBlogAction = async (blogId: string) => {
+    return handleActionApi({
         handler: async () => {
             await deleteBlog(blogId);
             revalidatePath('/blogs');
             revalidatePath('/dashboard');
         },
-        isServerAction: true,
         skipUserValidation: false
     })
 };

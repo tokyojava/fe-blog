@@ -1,5 +1,4 @@
 "use server";
-import { connectToDatabase } from "@/db/driver";
 import { serverError } from "@/lib/server_utils";
 import { EmailLoginUserRequest, EmailLoginUserZodSchema } from "@/types/user";
 import bcrypt from "bcrypt";
@@ -7,19 +6,17 @@ import User from "@/model/users";
 import { cookies } from 'next/headers';
 import { TOKEN_VALIDATION_INTERVAL } from "@/const";
 import { signToken } from "@/lib/token";
-import { API_ERRORS, APIException, handleApi } from "@/lib/api";
+import { API_ERRORS, APIException, handleActionApi } from "@/lib/api";
 export type LoginActionServerSideState = {
     apiError?: string;
 }
 
 export async function LoginAction(req: EmailLoginUserRequest) {
-    return handleApi({
+    return handleActionApi({
         handler: async () => {
             const result = await EmailLoginUserZodSchema.safeParseAsync(req);
 
             if (result.success) {
-                await connectToDatabase();
-
                 // Find user by email
                 const user = await User.findOne({ email: result.data.email });
                 if (!user) {
@@ -53,7 +50,6 @@ export async function LoginAction(req: EmailLoginUserRequest) {
                 throw new APIException(API_ERRORS.SERVER_SIDE_VALIDATION_ERROR);
             }
         },
-        isServerAction: true,
         skipUserValidation: true,
     });
 }
