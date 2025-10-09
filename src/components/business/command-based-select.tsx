@@ -15,7 +15,7 @@ export interface CommandedBasedSelectProps {
     groups: KeyValuePairGroup[];
     placeholder: string;
     multiple?: boolean;
-    maxSelections?: number;
+    maxSelections?: number; // 新增属性
     defaultValue?: string | string[];
     onChange?: (value: string | string[]) => void;
 }
@@ -47,6 +47,11 @@ export function CommandBasedSelect(props: CommandedBasedSelectProps) {
             setOpen(false);
             onChange(newValue);
         }
+    };
+
+    const handleClearAll = () => {
+        setSelectedValues([]);
+        onChange(multiple ? [] : "");
     };
 
     const displayValue = multiple
@@ -92,6 +97,13 @@ export function CommandBasedSelect(props: CommandedBasedSelectProps) {
                         ))}
                     </CommandList>
                 </Command>
+                {multiple && selectedValues.length > 0 && (
+                    <div className="p-2 border-t">
+                        <Button variant="ghost" className="w-full" onClick={handleClearAll}>
+                            Clear All
+                        </Button>
+                    </div>
+                )}
             </PopoverContent>
         </Popover>
     );

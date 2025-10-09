@@ -1,16 +1,14 @@
 
+import { BackToList } from "@/components/business/back_to_list";
+import BlogCategoryTypeInfo from "@/components/business/blog_category_type_info";
+import { DeleteBlogButton } from "@/components/business/delete_blog_button";
+import Markdown from "@/components/business/markdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { BackToList } from "@/components/business/back_to_list";
+import { connectToDatabase } from "@/db/driver";
+import { formatReadableTime } from "@/lib/utils";
 import { getBlogById } from "@/model/blogs";
 import { notFound } from "next/navigation";
-import { formatReadableTime } from "@/lib/utils";
-import { connectToDatabase } from "@/db/driver";
-import Markdown from "@/components/business/markdown";
-import { NotebookText, Rss } from "lucide-react";
-import { DeleteBlogButton } from "@/components/business/delete_blog_button";
-import BlogCategoryTypeInfo from "@/components/business/blog_category_type_info";
 
 export default async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
