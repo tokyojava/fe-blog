@@ -1,4 +1,5 @@
 import BlogCategoryTypeInfo from "@/components/business/blog_category_type_info";
+import { BlogPagePagination } from "@/components/business/blog_page_pagination";
 import { BlogsFiltersSection } from "@/components/business/blogs_filters_section";
 import CreateBlogButton from "@/components/business/create_new_blog";
 import { DeleteBlogButton } from "@/components/business/delete_blog_button";
@@ -17,6 +18,7 @@ interface BlogPageProps {
     searchParams: {
         category?: string[];
         type?: IBlog['type'];
+        page?: string;
     };
 }
 
@@ -24,7 +26,9 @@ async function BlogsPage(props: BlogPageProps) {
     const { user, searchParams } = props;
 
     const params = await searchParams;
-    const blogs = await getBlogs({ author: user.id, ...params });
+    
+    const { blogs, pagination } = await getBlogs({ author: user.id, ...params });
+
     return (
         <div className="p-6">
             <CreateBlogButton />
@@ -41,6 +45,9 @@ async function BlogsPage(props: BlogPageProps) {
                         No blogs found. Click &apos;New Blog&apos; to create your first blog!
                     </div>)
                 }
+                <div className="flex justify-end mt-6">
+                    <BlogPagePagination totalPages={pagination.totalPages} initialPage={params.page || "1"} />
+                </div>
             </div>
         </div>
     )

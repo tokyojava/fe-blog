@@ -12,7 +12,6 @@ export interface IBlog extends Document {
   type: 'blog' | 'diary';
   category: string[];
   author: mongoose.Types.ObjectId;
-  is_public: boolean;
   created_at: Date;
   updated_at: Date;
 }
@@ -26,7 +25,6 @@ const blogSchema: Schema = new Schema<IBlog>({
   type: { type: String, enum: ['blog', 'diary'], required: true },
   category: { type: [String], required: true },
   author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  is_public: { type: Boolean, default: true },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });
@@ -72,37 +70,66 @@ export interface GetBlogsOptions {
   limit?: number;
   category?: string[];
   type?: IBlog['type'];
-  beforeDate?: Date;
+  pageSize?: number;
+  page?: string;
 }
 
 export async function getBlogs(options: GetBlogsOptions = {}) {
   try {
-    const query: any = {};
-    if (options.author) {
-      query.author = options.author;
-    }
-    if (options.beforeDate) {
-      query.created_at = { $lt: options.beforeDate };
-    }
-    if (options.category && options.category.length > 0) {
-      query.category = { $in: options.category };
-    }
-    if (options.type) {
-      query.type = options.type;
-    }
-    console.log("query", options);
+    const query: any = buildQuery(options);
+
+    const page = parseInt(options.page || "1");
+    const pageSize = options.pageSize || 5;
+    const skip = (page - 1) * pageSize;
 
     const blogs = await BlogModel.find(query)
       .sort({ created_at: -1 })
-      .limit(options.limit || 5)
+      .skip(skip)
+      .limit(pageSize)
       .populate('author')
       .lean<PopulatedBlog[]>();
-    return blogs;
+
+    const total = await BlogModel.countDocuments(query);
+
+    return {
+      blogs,
+      pagination: {
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
   } catch (e) {
     serverError(e);
     throw e;
   }
 }
+
+export async function getBlogsCount(options: GetBlogsOptions = {}) {
+  try {
+    const query: any = buildQuery(options);
+    const count = await BlogModel.countDocuments(query);
+    return count;
+  } catch (e) {
+    serverError(e);
+    throw e;
+  }
+}
+
+function buildQuery(options: GetBlogsOptions): any {
+  const query: any = {};
+  if (options.author) {
+    query.author = options.author;
+  }
+  if (options.category && options.category.length > 0) {
+    query.category = { $in: options.category };
+  }
+  if (options.type) {
+    query.type = options.type;
+  }
+  return query;
+}
+
+
 
 export async function deleteBlog(id: string) {
   try {
@@ -116,6 +143,10 @@ export async function deleteBlog(id: string) {
 
 export async function removeAllBlogs() {
   await BlogModel.deleteMany({});
-} 
+}
+
+export async function insertManyBlogs(blogs: Partial<IBlog>[]) {
+  await BlogModel.insertMany(blogs);
+}
 
 export default BlogModel;
