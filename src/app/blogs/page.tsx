@@ -49,6 +49,7 @@ async function BlogPage(props: { user: TokenPayload }) {
                         <CommandedBasedSelect
                             groups={techGroups}
                             placeholder="All"
+                            multiple
                         />
                     </div>
                 </div>

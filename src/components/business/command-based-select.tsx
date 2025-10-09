@@ -9,19 +9,41 @@ import { cn } from "@/lib/utils";
 export type KeyValuePairGroup = {
     title: string;
     pairs: { label: string; value: string }[];
-}
+};
 
 export interface CommandedBasedSelectProps {
     groups: KeyValuePairGroup[];
     placeholder: string;
-    onChange?: (value: string) => void;
+    multiple?: boolean;
+    onChange?: (value: string | string[]) => void;
 }
-export function CommandedBasedSelect(props: CommandedBasedSelectProps) {
-    const [value, setValue] = useState("");
 
+export function CommandedBasedSelect(props: CommandedBasedSelectProps) {
+    const [selectedValues, setSelectedValues] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
-    const { groups, placeholder, onChange = () => { } } = props;
-    const flattenedPairs = useMemo(() => groups.flatMap(group => group.pairs), [groups]);
+
+    const { groups, placeholder, multiple = false, onChange = () => {} } = props;
+    const flattenedPairs = useMemo(() => groups.flatMap((group) => group.pairs), [groups]);
+
+    const handleSelect = (currentValue: string) => {
+        if (multiple) {
+            const newValues = selectedValues.includes(currentValue)
+                ? selectedValues.filter((value) => value !== currentValue)
+                : [...selectedValues, currentValue];
+            setSelectedValues(newValues);
+            onChange(newValues);
+        } else {
+            const newValue = currentValue === selectedValues[0] ? "" : currentValue;
+            setSelectedValues(newValue ? [newValue] : []);
+            setOpen(false);
+            onChange(newValue);
+        }
+    };
+
+    const displayValue = multiple
+        ? selectedValues.map((value) => flattenedPairs.find((f) => f.value === value)?.label).join(", ")
+        : flattenedPairs.find((f) => f.value === selectedValues[0])?.label;
+
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -29,11 +51,9 @@ export function CommandedBasedSelect(props: CommandedBasedSelectProps) {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-48 justify-between"
+                    className="w-48 justify-between overflow-hidden"
                 >
-                    {value
-                        ? flattenedPairs.find((f) => f.value === value)?.label
-                        : placeholder}
+                    {displayValue || placeholder}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
@@ -48,16 +68,12 @@ export function CommandedBasedSelect(props: CommandedBasedSelectProps) {
                                     <CommandItem
                                         key={pair.value}
                                         value={pair.value}
-                                        onSelect={(currentValue) => {
-                                            setValue(currentValue === value ? "" : currentValue);
-                                            setOpen(false);
-                                            onChange(currentValue === value ? "" : currentValue);
-                                        }}
+                                        onSelect={() => handleSelect(pair.value)}
                                     >
                                         <Check
                                             className={cn(
                                                 "mr-2 h-4 w-4",
-                                                value === pair.value ? "opacity-100" : "opacity-0"
+                                                selectedValues.includes(pair.value) ? "opacity-100" : "opacity-0"
                                             )}
                                         />
                                         {pair.label}
