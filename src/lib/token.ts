@@ -1,5 +1,6 @@
 import * as jose from "jose";
 import { JWT_SECRET, TOKEN_VALIDATION_INTERVAL } from "@/const";
+import { serverError } from "./server_utils";
 export type TokenPayload = {
     id: string;
     email: string;
@@ -22,14 +23,19 @@ export async function verifyToken(token: string) {
         return payload;
     } catch (err) {
         console.error("Invalid token", err);
-        return null;
+        throw err;
     }
 }
 
 export async function getUserFromToken(token: string) {
-    const payload = await verifyToken(token);
-    if (payload) {
-        return payload as TokenPayload;
+    try {
+        const payload = await verifyToken(token);
+        if (payload) {
+            return payload as TokenPayload;
+        }
+        return null;
+    } catch (e) {
+        serverError(e);
+        return null;
     }
-    return null;
 }

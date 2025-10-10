@@ -10,7 +10,7 @@ export default async function BlogsPage(props: PageProps<'/blogs'>) {
     const key = new URLSearchParams(params as any).toString();
 
     return (
-        <div className="p-6">
+        <div className="p-6 pt-0">
             <CreateBlogButton />
             {/* Filters Section */}
             <BlogsFiltersSection />

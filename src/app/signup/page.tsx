@@ -50,7 +50,7 @@ export default function SignupPage() {
 
     return (
         <div className={"w-full h-full relative"}>
-            <Card className="w-1/2 absolute top-1/6 left-1/2 -translate-x-1/2">
+            <Card className="w-5/6 lg:w-1/2 absolute top-1/6 left-1/2 -translate-x-1/2">
                 <CardHeader>
                     <CardTitle>
                         Create your account

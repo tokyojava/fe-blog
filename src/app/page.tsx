@@ -9,7 +9,7 @@ export default async function DashboardPage(props: PageProps<'/'>) {
   const key = new URLSearchParams(params as any).toString();
 
   return (
-    <div className="p-6">
+    <div className="p-6 pt-0">
       {/* Filters Section */}
       <BlogsFiltersSection />
 

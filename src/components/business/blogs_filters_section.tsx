@@ -43,16 +43,16 @@ export function BlogsFiltersSection() {
     }
 
     return (
-        <div className="border rounded-lg p-4 mb-6 bg-white shadow-sm">
-            <div className="flex items-center mb-4">
+        <div className="border rounded p-2 mb-4 bg-white shadow-sm">
+            <div className="flex items-center mb-2">
                 <span className="flex items-center text-gray-600 text-sm font-medium">
-                    <Filter className="h-4 w-4 mr-2" />
+                    <Filter className="h-4 w-4 mr-1" />
                     Filters
                 </span>
             </div>
-            <div className="flex items-center space-x-4 flex-wrap">
+            <div className="flex items-center space-x-2 flex-wrap">
                 <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-500 mb-2">Type</span>
+                    <span className="text-xs font-medium text-gray-500 mb-1">Type</span>
                     <CommandBasedSelect
                         groups={types}
                         defaultValue={type}
@@ -60,11 +60,10 @@ export function BlogsFiltersSection() {
                             setType(val as string);
                         }}
                         placeholder="All"
-
                     />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-500 mb-2">Category</span>
+                    <span className="text-xs font-medium text-gray-500 mb-1">Category</span>
                     <CommandBasedSelect
                         onChange={(value) => {
                             setCategory(value as string[]);
@@ -76,8 +75,8 @@ export function BlogsFiltersSection() {
                         multiple
                     />
                 </div>
-                <Button onClick={doSearch} className="mt-6 w-1/4 lg:w-auto">Search</Button>
-                <Button onClick={doRefresh} variant="outline" className="mt-6 w-1/4 lg:w-auto">Refresh</Button>
+                <Button onClick={doSearch} className="mt-4 w-auto px-4 py-1 text-sm">Search</Button>
+                <Button onClick={doRefresh} variant="outline" className="mt-4 w-auto px-4 py-1 text-sm">Refresh</Button>
             </div>
         </div>
     )

@@ -10,8 +10,8 @@ export default function CreateBlogButton() {
     };
 
     return (
-        <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">My Blogs</h1>
+        <div className="text-lg flex justify-between items-center mb-4">
+            <h1 className="font-bold">My Blogs</h1>
             <Button
                 onClick={handleAddProblem}
             >

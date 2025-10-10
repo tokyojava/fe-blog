@@ -1,3 +1,4 @@
+import { connectToDatabase } from "@/db/driver"
 import { formatReadableTime } from "@/lib/utils"
 import { getBlogs, PopulatedBlog } from "@/model/blogs"
 import Link from "next/link"
@@ -5,9 +6,6 @@ import { Button } from "../ui/button"
 import { Card, CardContent, CardHeader } from "../ui/card"
 import BlogCategoryTypeInfo from "./blog_category_type_info"
 import { BlogPagePagination } from "./blog_page_pagination"
-import { DeleteBlogButton } from "./delete_blog_button"
-import { EditBlogButton } from "./update_blog_button"
-import { connectToDatabase } from "@/db/driver"
 
 interface DashboardPageMainComponentProps {
     params: { [key: string]: string | string[] | undefined };
@@ -55,11 +53,7 @@ function BlogCard({ blog }: { blog: PopulatedBlog }) {
                             View
                         </Link>
                     </Button>
-                    <EditBlogButton blogId={blog._id.toString()} />
                 </div>
-                <DeleteBlogButton
-                    blogId={blog._id.toString()}
-                />
             </CardContent>
         </Card>
     )
