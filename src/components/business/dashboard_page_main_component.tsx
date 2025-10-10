@@ -1,10 +1,6 @@
 import { connectToDatabase } from "@/db/driver"
-import { formatReadableTime } from "@/lib/utils"
-import { getBlogs, PopulatedBlog } from "@/model/blogs"
-import Link from "next/link"
-import { Button } from "../ui/button"
-import { Card, CardContent, CardHeader } from "../ui/card"
-import BlogCategoryTypeInfo from "./blog_category_type_info"
+import { getBlogs } from "@/model/blogs"
+import { BlogCard } from "./blog_card"
 import { BlogPagePagination } from "./blog_page_pagination"
 
 interface DashboardPageMainComponentProps {
@@ -30,31 +26,4 @@ export default async function BlogsPageMainComponent(props: DashboardPageMainCom
             </div>
         </div>
     );
-}
-
-function BlogCard({ blog }: { blog: PopulatedBlog }) {
-    return (
-        <Card>
-            <CardHeader className="flex items-center justify-between">
-                <div>
-                    <h2 className="text-lg font-semibold">{blog.title}</h2>
-                    <div className="flex items-center space-x-2 text-gray-500 text-sm">
-                        <span>{blog.author.username}</span>
-                        <span>•</span>
-                        <span>{formatReadableTime(blog.updated_at)}</span>
-                    </div>
-                </div>
-                <BlogCategoryTypeInfo blog={blog} />
-            </CardHeader>
-            <CardContent className="flex items-center justify-between">
-                <div className="flex space-x-2">
-                    <Button asChild variant="outline">
-                        <Link href={`/blogs/${blog._id}`}>
-                            View
-                        </Link>
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
-    )
 }

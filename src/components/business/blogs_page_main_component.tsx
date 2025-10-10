@@ -1,14 +1,8 @@
-import { formatReadableTime } from "@/lib/utils"
-import { getBlogs, PopulatedBlog } from "@/model/blogs"
-import { Card, CardHeader, CardContent } from "../ui/card"
-import BlogCategoryTypeInfo from "./blog_category_type_info"
-import { BlogPagePagination } from "./blog_page_pagination"
-import { DeleteBlogButton } from "./delete_blog_button"
-import { Button } from "../ui/button"
-import { withUser } from "./with_user"
 import { TokenPayload } from "@/lib/token"
-import Link from "next/link"
-import { EditBlogButton } from "./update_blog_button"
+import { getBlogs } from "@/model/blogs"
+import { BlogCard } from "./blog_card"
+import { BlogPagePagination } from "./blog_page_pagination"
+import { withUser } from "./with_user"
 
 interface BlogsPageMainComponentProps {
     user: TokenPayload;
@@ -36,35 +30,3 @@ async function BlogsPageMainComponent(props: BlogsPageMainComponentProps) {
 }
 
 export default withUser(BlogsPageMainComponent);
-
-
-function BlogCard({ blog }: { blog: PopulatedBlog }) {
-    return (
-        <Card>
-            <CardHeader className="flex items-center justify-between">
-                <div>
-                    <h2 className="text-lg font-semibold">{blog.title}</h2>
-                    <div className="flex items-center space-x-2 text-gray-500 text-sm">
-                        <span>{blog.author.username}</span>
-                        <span>•</span>
-                        <span>{formatReadableTime(blog.updated_at)}</span>
-                    </div>
-                </div>
-                <BlogCategoryTypeInfo blog={blog} />
-            </CardHeader>
-            <CardContent className="flex items-center justify-between">
-                <div className="flex space-x-2">
-                    <Button asChild variant="outline">
-                        <Link href={`/blogs/${blog._id}`}>
-                            View
-                        </Link>
-                    </Button>
-                    <EditBlogButton blogId={blog._id.toString()} />
-                </div>
-                <DeleteBlogButton
-                    blogId={blog._id.toString()}
-                />
-            </CardContent>
-        </Card>
-    )
-}

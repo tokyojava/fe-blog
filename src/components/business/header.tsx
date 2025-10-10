@@ -31,7 +31,7 @@ export default function Header() {
     return (
         <header className="flex items-center justify-between p-4 px-6 bg-white">
             {/* Left Section */}
-            <div className="flex items-center space-x-26">
+            <div className="flex items-center space-x-8 lg:space-x-16">
                 <div className="flex items-center space-x-2 text-gray-600">
                     <FaHome />
                     <span className="hidden lg:block">Record your life!</span>

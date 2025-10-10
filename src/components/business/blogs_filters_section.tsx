@@ -51,7 +51,7 @@ export function BlogsFiltersSection() {
                 </span>
             </div>
             <div className="flex items-center space-x-2 flex-wrap">
-                <div className="flex flex-col">
+                <div className="w-full lg:w-auto flex flex-col">
                     <span className="text-xs font-medium text-gray-500 mb-1">Type</span>
                     <CommandBasedSelect
                         groups={types}
@@ -62,7 +62,7 @@ export function BlogsFiltersSection() {
                         placeholder="All"
                     />
                 </div>
-                <div className="flex flex-col">
+                <div className="w-full lg:w-auto flex flex-col max-lg:mt-4">
                     <span className="text-xs font-medium text-gray-500 mb-1">Category</span>
                     <CommandBasedSelect
                         onChange={(value) => {
@@ -75,8 +75,8 @@ export function BlogsFiltersSection() {
                         multiple
                     />
                 </div>
-                <Button onClick={doSearch} className="mt-4 w-auto px-4 py-1 text-sm">Search</Button>
-                <Button onClick={doRefresh} variant="outline" className="mt-4 w-auto px-4 py-1 text-sm">Refresh</Button>
+                <Button onClick={doSearch} className="w-2/5 mt-4 lg:w-auto px-4 py-1 text-sm">Search</Button>
+                <Button onClick={doRefresh} variant="outline" className="w-2/5 mt-4 lg:w-auto px-4 py-1 text-sm">Refresh</Button>
             </div>
         </div>
     )
