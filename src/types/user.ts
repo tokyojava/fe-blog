@@ -13,7 +13,7 @@ export const constraints = {
         maxLength: 20,
     },
     password: {
-        minLength: 8,
+        minLength: 6,
     },
     emailPattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 };

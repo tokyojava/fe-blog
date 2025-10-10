@@ -7,6 +7,7 @@ import BlogCategoryTypeInfo from "./blog_category_type_info"
 import { BlogPagePagination } from "./blog_page_pagination"
 import { DeleteBlogButton } from "./delete_blog_button"
 import { EditBlogButton } from "./update_blog_button"
+import { connectToDatabase } from "@/db/driver"
 
 interface DashboardPageMainComponentProps {
     params: { [key: string]: string | string[] | undefined };
@@ -14,6 +15,7 @@ interface DashboardPageMainComponentProps {
 
 export default async function BlogsPageMainComponent(props: DashboardPageMainComponentProps) {
     const { params } = props;
+    await connectToDatabase();
     const { blogs, pagination } = await getBlogs({ ...params });
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
