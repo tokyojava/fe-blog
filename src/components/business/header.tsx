@@ -31,25 +31,27 @@ export default function Header() {
     return (
         <header className="flex items-center justify-between p-4 px-6 bg-white">
             {/* Left Section */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-26">
                 <div className="flex items-center space-x-2 text-gray-600">
                     <FaHome />
                     <span className="hidden lg:block">Record your life!</span>
                 </div>
-                <Link href="/" className={
-                    clsx("text-sm lg:text-lg text-blue-600 hover:underline", {
+                <div className="flex item-center space-x-4">
+                    <Link href="/" className={
+                    clsx("text-sm lg:text-md text-blue-600 hover:underline", {
                         "font-bold": pathname === "/"
                     })
                 }>
                     Dashboard
                 </Link>
                 <Link href="/blogs" className={
-                    clsx("text-sm lg:text-lg text-blue-600 hover:underline", {
+                    clsx("text-sm lg:text-md text-blue-600 hover:underline", {
                         "font-bold": pathname.startsWith("/blogs")
                     })
                 }>
                     My Blogs
                 </Link>
+                </div>
             </div>
 
             {

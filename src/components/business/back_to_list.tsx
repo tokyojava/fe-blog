@@ -11,7 +11,7 @@ export function BackToList() {
     };
 
     return (
-        <button onClick={handleBack} className="cursor-pointer ml-4 mb-4 text-blue-600 hover:underline">
+        <button onClick={handleBack} className="cursor-pointer ml-4 mb-2 text-blue-600 hover:underline">
             ← Back to List
         </button>
     );
