@@ -4,13 +4,13 @@ import { API_ERRORS, APIException, handleActionApi } from "@/lib/api";
 import { serverLog } from "@/lib/server_utils";
 import { TokenPayload } from "@/lib/token";
 import { createBlog } from "@/model/blogs";
-import { CreateBlogRequest, CreateBlogZodSchema } from "@/types/blog";
+import { CreateOrUpdateBlogRequest, CreateOrUpdateBlogZodSchema } from "@/types/blog";
 import { revalidatePath } from "next/cache";
 
-export async function CreateBlogAction(req: CreateBlogRequest) {
+export async function CreateBlogAction(req: CreateOrUpdateBlogRequest) {
     return handleActionApi({
         handler: async (user: TokenPayload | null) => {
-            const result = await CreateBlogZodSchema.safeParseAsync(req);
+            const result = await CreateOrUpdateBlogZodSchema.safeParseAsync(req);
 
             if (result.success) {
                 let blog = null;

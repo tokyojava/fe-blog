@@ -1,4 +1,3 @@
-import { TokenPayload } from "@/lib/token"
 import { formatReadableTime } from "@/lib/utils"
 import { getBlogs, PopulatedBlog } from "@/model/blogs"
 import Link from "next/link"
@@ -8,16 +7,14 @@ import BlogCategoryTypeInfo from "./blog_category_type_info"
 import { BlogPagePagination } from "./blog_page_pagination"
 import { DeleteBlogButton } from "./delete_blog_button"
 import { EditBlogButton } from "./update_blog_button"
-import { withUser } from "./with_user"
 
-interface BlogsPageMainComponentProps {
-    user: TokenPayload;
+interface DashboardPageMainComponentProps {
     params: { [key: string]: string | string[] | undefined };
 }
 
-async function BlogsPageMainComponent(props: BlogsPageMainComponentProps) {
-    const { user, params } = props;
-    const { blogs, pagination } = await getBlogs({ author: user.id, ...params });
+export default async function BlogsPageMainComponent(props: DashboardPageMainComponentProps) {
+    const { params } = props;
+    const { blogs, pagination } = await getBlogs({ ...params });
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {blogs.map((blog) => (
@@ -25,7 +22,7 @@ async function BlogsPageMainComponent(props: BlogsPageMainComponentProps) {
             ))}
             {blogs.length === 0 && (
                 <div className="text-center text-gray-500 col-span-2">
-                    No blogs found. Click &apos;New Blog&apos; to create your first blog!
+                    No blogs found for the current search criteria.
                 </div>)
             }
             <div className="flex justify-end mt-6 col-span-2">
@@ -34,9 +31,6 @@ async function BlogsPageMainComponent(props: BlogsPageMainComponentProps) {
         </div>
     );
 }
-
-export default withUser(BlogsPageMainComponent);
-
 
 function BlogCard({ blog }: { blog: PopulatedBlog }) {
     return (

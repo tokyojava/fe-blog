@@ -22,6 +22,7 @@ export function BlogsFiltersSection() {
     const [category, setCategory] = useState<string[]>(initialSearchParams.getAll("category") || []);
     
     const router = useRouter();
+    const params = useSearchParams();
     const pathname = usePathname();
 
     const doSearch = () => {
@@ -33,6 +34,12 @@ export function BlogsFiltersSection() {
             params.append("category", cat);
         });
         router.replace(`${pathname}?${params.toString()}`);
+    }
+
+    const doRefresh = () => {
+        const newParams = new URLSearchParams(params.toString());
+        newParams.set("refresh", Date.now().toString());
+        router.replace(`${pathname}?${newParams.toString()}`);
     }
 
     return (
@@ -70,6 +77,7 @@ export function BlogsFiltersSection() {
                     />
                 </div>
                 <Button onClick={doSearch} className="mt-6">Search</Button>
+                <Button onClick={doRefresh} variant="outline" className="mt-6">Refresh</Button>
             </div>
         </div>
     )

@@ -6,27 +6,31 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { MyInputFormField } from "@/components/ui/my_form_elements";
 import { ActionAPIResponse } from "@/lib/api";
+import { useAuthStore } from "@/lib/store";
 import { EmailLoginUserRequest, EmailLoginUserZodSchema } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { redirect, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { LoginAction } from "./actions";
 import { toast } from "sonner";
+import { LoginAction } from "./actions";
 
 export default function LoginPage() {
     const form = useForm({
         resolver: zodResolver(EmailLoginUserZodSchema),
         defaultValues: {
-            email: "a@a.com",
-            password: "11111111",
+            email: "",
+            password: "",
         }
     });
 
     const [isPending, startTransition] = useTransition();
+    const { setUser } = useAuthStore();
+
 
     const [apiError, setApiError] = useState("");
+    const router = useRouter();
 
     const submit = useCallback(async (data: EmailLoginUserRequest) => {
         startTransition(async () => {
@@ -34,10 +38,11 @@ export default function LoginPage() {
             if (result.error) {
                 setApiError(result.error.message);
             } else {
-                redirect("/blogs");
+                setUser(result.data as any);
+                router.push('/');
             }
         });
-    }, []);
+    }, [router, setUser]);
 
     return (
         <div className={"w-full h-full relative"}>

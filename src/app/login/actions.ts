@@ -1,12 +1,12 @@
 "use server";
+import { TOKEN_VALIDATION_INTERVAL } from "@/const";
+import { API_ERRORS, APIException, handleActionApi } from "@/lib/api";
 import { serverError } from "@/lib/server_utils";
+import { signToken, verifyToken } from "@/lib/token";
+import User from "@/model/users";
 import { EmailLoginUserRequest, EmailLoginUserZodSchema } from "@/types/user";
 import bcrypt from "bcrypt";
-import User from "@/model/users";
 import { cookies } from 'next/headers';
-import { TOKEN_VALIDATION_INTERVAL } from "@/const";
-import { signToken } from "@/lib/token";
-import { API_ERRORS, APIException, handleActionApi } from "@/lib/api";
 export type LoginActionServerSideState = {
     apiError?: string;
 }
@@ -37,6 +37,8 @@ export async function LoginAction(req: EmailLoginUserRequest) {
                     name: user.username,
                 }
                 const tokenValue = await signToken(userInfo);
+                // add the exp and iss attributes
+                const enahancedUserInfo = await verifyToken(tokenValue);
 
                 cookieStore.set('token', tokenValue, {
                     httpOnly: true, // Recommended for security
@@ -44,6 +46,8 @@ export async function LoginAction(req: EmailLoginUserRequest) {
                     maxAge: 60 * 60 * 24 * TOKEN_VALIDATION_INTERVAL - 600, // 7 days in seconds minus some buffer
                     path: '/',
                 });
+
+                return enahancedUserInfo;
 
             } else {
                 serverError(result.error);

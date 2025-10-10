@@ -1,5 +1,5 @@
 import { serverError } from '@/lib/server_utils';
-import { CreateBlogRequest } from '@/types/blog';
+import { CreateOrUpdateBlogRequest } from '@/types/blog';
 import mongoose, { Schema } from 'mongoose';
 import { ensureUserModelRegistration, type IUser } from './users';
 
@@ -37,19 +37,27 @@ blogSchema.index({ tags: 1 });
 // 创建文章表模型
 const BlogModel = mongoose.models.Blog || mongoose.model('Blog', blogSchema);
 
-export async function createBlog(req: CreateBlogRequest & { author: string }) {
+export async function createBlog(req: CreateOrUpdateBlogRequest & { author: string }) {
   const newBlog = new BlogModel({
-    title: req.title,
-    content: req.content,
-    tags: req.tags,
-    summary: req.summary,
-    category: req.category,
-    type: req.type,
+    ...req,
     author: new mongoose.Types.ObjectId(req.author),
   });
   await newBlog.save();
   return newBlog;
 }
+
+export async function updateBlog(id: string, req: CreateOrUpdateBlogRequest) {
+  const updatedBlog = await BlogModel.findByIdAndUpdate(
+    id,
+    {
+      ...req,
+      updated_at: new Date(),
+    },
+    { new: true }
+  );
+  return updatedBlog;
+}
+
 
 export type PopulatedBlog = IBlog & { author: IUser };
 
@@ -58,7 +66,7 @@ ensureUserModelRegistration();
 export async function getBlogById(id: string) {
   try {
     const blog = await BlogModel.findById(id).populate('author').lean<PopulatedBlog>();
-    return blog;
+    return JSON.parse(JSON.stringify(blog));
   } catch (e) {
     serverError(e);
     throw e;
@@ -79,7 +87,7 @@ export async function getBlogs(options: GetBlogsOptions = {}) {
     const query: any = buildQuery(options);
 
     const page = parseInt(options.page || "1");
-    const pageSize = options.pageSize || 5;
+    const pageSize = options.pageSize || 6;
     const skip = (page - 1) * pageSize;
 
     const blogs = await BlogModel.find(query)

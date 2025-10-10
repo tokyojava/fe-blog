@@ -9,7 +9,6 @@ export interface MyPaginationProps {
 
 export function MyPagination(props: MyPaginationProps) {
     const [inputValue, setInputValue] = useState(props.page);
-    console.log(inputValue);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -44,7 +43,7 @@ export function MyPagination(props: MyPaginationProps) {
                 Previous
             </Button>
             <input
-                className="mx-2 w-16 text-center"
+                className="mx-2 w-16 text-center border-2"
                 type="number"
                 value={inputValue}
                 onChange={handleInputChange}
@@ -52,6 +51,7 @@ export function MyPagination(props: MyPaginationProps) {
                 min={1}
                 max={props.total}
             />
+            <span className="mr-8">/ {props.total} pages</span>
             <Button
                 onClick={() => {
                     const p = Math.min(props.total, props.page + 1);

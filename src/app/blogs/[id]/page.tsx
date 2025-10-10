@@ -4,10 +4,9 @@ import BlogCategoryTypeInfo from "@/components/business/blog_category_type_info"
 import { DeleteBlogButton } from "@/components/business/delete_blog_button";
 import Markdown from "@/components/business/markdown";
 import { EditBlogButton } from "@/components/business/update_blog_button";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { connectToDatabase } from "@/db/driver";
-import { formatReadableTime, sleep } from "@/lib/utils";
+import { formatReadableTime } from "@/lib/utils";
 import { getBlogById } from "@/model/blogs";
 import { notFound } from "next/navigation";
 

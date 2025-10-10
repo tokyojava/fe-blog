@@ -31,6 +31,7 @@ type MyRadioGroupFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T>
 
 type MySelectFormFieldProps<T extends FieldValues> = MyBaseFormFieldProps<T> & {
     placeholder?: string;
+    defaultValue?: string | string[];
     groups: KeyValuePairGroup[];
 }
 
@@ -106,7 +107,7 @@ export function MyTextAreaFormField<T extends FieldValues>({ className, noLabel,
 //     )
 // }
 
-export function MySelectFormField<T extends FieldValues>({ form, name, label, placeholder, groups }: MySelectFormFieldProps<T>) {
+export function MySelectFormField<T extends FieldValues>({ defaultValue, form, name, label, placeholder, groups }: MySelectFormFieldProps<T>) {
     return (
         <Field>
             <FormField
@@ -117,6 +118,7 @@ export function MySelectFormField<T extends FieldValues>({ form, name, label, pl
                         <FormLabel>{label}</FormLabel>
                         <FormControl>
                             <CommandBasedSelect
+                                defaultValue={defaultValue}
                                 groups={groups}
                                 placeholder={placeholder || "Select an option"}
                                 onChange={(value) => {

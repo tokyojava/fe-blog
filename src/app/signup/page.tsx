@@ -20,9 +20,9 @@ export default function SignupPage() {
     const form = useForm<CreateEmailUserRequest>({
         resolver: zodResolver(CreateEmailUserZodSchema),
         defaultValues: {
-            username: "aaa",
-            email: "a@a.com",
-            password: "11111111",
+            username: "",
+            email: "",
+            password: "",
         }
     })
 
