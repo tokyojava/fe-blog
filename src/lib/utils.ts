@@ -37,3 +37,7 @@ export function formatReadableTime(updatedAt: Date | string): string {
 
   return `${year}-${month}-${day} ${hour}:${minute}`;
 }
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

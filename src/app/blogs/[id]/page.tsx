@@ -3,10 +3,11 @@ import { BackToList } from "@/components/business/back_to_list";
 import BlogCategoryTypeInfo from "@/components/business/blog_category_type_info";
 import { DeleteBlogButton } from "@/components/business/delete_blog_button";
 import Markdown from "@/components/business/markdown";
+import { EditBlogButton } from "@/components/business/update_blog_button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { connectToDatabase } from "@/db/driver";
-import { formatReadableTime } from "@/lib/utils";
+import { formatReadableTime, sleep } from "@/lib/utils";
 import { getBlogById } from "@/model/blogs";
 import { notFound } from "next/navigation";
 
@@ -36,7 +37,7 @@ export default async function BlogPage({ params }: { params: Promise<{ id: strin
                 <CardContent>
                     <Markdown className="border-0" content={blog.content} />
                     <div className="flex items-center space-x-4 mt-6">
-                        <Button variant="outline">Edit</Button>
+                        <EditBlogButton blogId={blog._id.toString()} />
                         <DeleteBlogButton blogId={blog._id.toString()} redirectToBlogPage />
                     </div>
                 </CardContent>

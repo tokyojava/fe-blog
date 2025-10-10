@@ -3,6 +3,7 @@ import { fetchUser, serverError } from "./server_utils";
 import { redirect } from "next/navigation";
 import { connectToDatabase } from "@/db/driver";
 import { TokenPayload } from "./token";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export type APISuccess<T> = {
     data: T;
@@ -96,7 +97,12 @@ async function handleApiBase<T>(options: ApiHandler<T>, responseWrapper: (result
         const data = await options.handler(user);
         return responseWrapper(ok(data));
     } catch (e) {
+        // allow redirect error to propagate
+        if (isRedirectError(e)) {
+            throw e;
+        }
         serverError(e);
+
         if (e instanceof APIException) {
             return responseWrapper(fail(e.code, e.message));
         }

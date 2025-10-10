@@ -11,7 +11,8 @@ export function DeleteBlogButton({ blogId, redirectToBlogPage }: { blogId: strin
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
-    const handleClick = useCallback(() => {
+    const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
         startTransition(async () => {
             const result = (await deleteBlogAction(blogId)) as ActionAPIResponse<null>;
             if (result) {

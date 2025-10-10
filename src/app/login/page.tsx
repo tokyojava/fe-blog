@@ -9,10 +9,11 @@ import { ActionAPIResponse } from "@/lib/api";
 import { EmailLoginUserRequest, EmailLoginUserZodSchema } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { useCallback, useState, useTransition } from "react";
+import { redirect, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { LoginAction } from "./actions";
+import { toast } from "sonner";
 
 export default function LoginPage() {
     const form = useForm({
@@ -40,6 +41,9 @@ export default function LoginPage() {
 
     return (
         <div className={"w-full h-full relative"}>
+            <Suspense>
+                <InvalidLoginToast />
+            </Suspense>
             <Card className="w-1/2 absolute top-1/6 left-1/2 -translate-x-1/2">
                 <CardHeader>
                     <CardTitle>
@@ -72,4 +76,15 @@ export default function LoginPage() {
             </Card>
         </div>
     );
+}
+
+function InvalidLoginToast() {
+    const params = useSearchParams();
+    const isInvalid = params.get("invalid") === "true";
+    useEffect(() => {
+        if (isInvalid) {
+            toast.error("Session expired, please log in again");
+        }
+    }, [isInvalid]);
+    return (<></>);
 }
