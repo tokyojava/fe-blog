@@ -20,7 +20,7 @@ export function BlogsFiltersSection() {
     const initialSearchParams = useSearchParams();
     const [type, setType] = useState<string>(initialSearchParams.get("type") || "all");
     const [category, setCategory] = useState<string[]>(initialSearchParams.getAll("category") || []);
-    
+
     const router = useRouter();
     const params = useSearchParams();
     const pathname = usePathname();
@@ -50,7 +50,7 @@ export function BlogsFiltersSection() {
                     Filters
                 </span>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 flex-wrap">
                 <div className="flex flex-col">
                     <span className="text-sm font-medium text-gray-500 mb-2">Type</span>
                     <CommandBasedSelect
@@ -76,8 +76,8 @@ export function BlogsFiltersSection() {
                         multiple
                     />
                 </div>
-                <Button onClick={doSearch} className="mt-6">Search</Button>
-                <Button onClick={doRefresh} variant="outline" className="mt-6">Refresh</Button>
+                <Button onClick={doSearch} className="mt-6 w-1/4 lg:w-auto">Search</Button>
+                <Button onClick={doRefresh} variant="outline" className="mt-6 w-1/4 lg:w-auto">Refresh</Button>
             </div>
         </div>
     )

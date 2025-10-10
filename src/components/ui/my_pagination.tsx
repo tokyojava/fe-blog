@@ -35,12 +35,15 @@ export function MyPagination(props: MyPaginationProps) {
                     setInputValue(p);
                 }}
                 disabled={props.page === 1}
-                className={`next-button px-4 py-2 rounded text-white ${props.page === 1
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-500 hover:bg-blue-600"
+                className={`next-button px-6 py-2 rounded text-white 
+                    text-xs md:text-sm
+                    w-10 lg:w-16
+                    ${props.page === 1
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-blue-500 hover:bg-blue-600"
                     }`}
             >
-                Previous
+                Prev
             </Button>
             <input
                 className="mx-2 w-16 text-center border-2"
@@ -51,7 +54,7 @@ export function MyPagination(props: MyPaginationProps) {
                 min={1}
                 max={props.total}
             />
-            <span className="mr-8">/ {props.total} pages</span>
+            <span className="mr-2">/ {props.total} pages</span>
             <Button
                 onClick={() => {
                     const p = Math.min(props.total, props.page + 1);
@@ -59,9 +62,12 @@ export function MyPagination(props: MyPaginationProps) {
                     setInputValue(p);
                 }}
                 disabled={props.page === props.total}
-                className={`next-button px-4 py-2 rounded text-white ${props.page === props.total
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-500 hover:bg-blue-600"
+                className={`
+                    w-10 lg:w-16
+                    text-xs md:text-sm
+                    next-button px-6 py-2 rounded text-white ${props.page === props.total
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-blue-500 hover:bg-blue-600"
                     }`}
             >
                 Next

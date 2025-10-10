@@ -1,8 +1,10 @@
 # 🧭 Product Requirements Document (PRD)
 
+MVP can be accessed [here](https://oliverqiu.xyz/)
+
 ## 1. Product Overview
 
-**Product Name:** My Frontend Blog  
+**Product Name:** Oliver xyz (Learn from abc and build to xyz!)  
 **Target Users:** Individual developers/learners  
 **Product Goal:**  
 A personal blog system that supports Markdown writing, allowing you to write diaries or technical notes. It also includes basic AI Agent capabilities (e.g., summarizing articles, generating tags, answering reader questions, etc.).

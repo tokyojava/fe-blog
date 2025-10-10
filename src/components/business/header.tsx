@@ -34,17 +34,17 @@ export default function Header() {
             <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2 text-gray-600">
                     <FaHome />
-                    <span>Problems</span>
+                    <span className="hidden lg:block">Record your life!</span>
                 </div>
                 <Link href="/" className={
-                    clsx("text-blue-600 hover:underline", {
+                    clsx("text-sm lg:text-lg text-blue-600 hover:underline", {
                         "font-bold": pathname === "/"
                     })
                 }>
                     Dashboard
                 </Link>
                 <Link href="/blogs" className={
-                    clsx("text-blue-600 hover:underline", {
+                    clsx("text-sm lg:text-lg text-blue-600 hover:underline", {
                         "font-bold": pathname.startsWith("/blogs")
                     })
                 }>

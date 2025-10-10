@@ -1,4 +1,3 @@
-
 import { BackToList } from "@/components/business/back_to_list";
 import BlogCategoryTypeInfo from "@/components/business/blog_category_type_info";
 import { DeleteBlogButton } from "@/components/business/delete_blog_button";
@@ -8,12 +7,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { connectToDatabase } from "@/db/driver";
 import { formatReadableTime } from "@/lib/utils";
 import { getBlogById } from "@/model/blogs";
+import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
+
+
 
 export default async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    await connectToDatabase();
-    const blog = await getBlogById(id);
+
+    const getCachedBlog = unstable_cache(
+        async () => {
+            await connectToDatabase();
+            const blog = await getBlogById(id);
+            return blog;
+        },
+        [id],
+        {
+            tags: ['blog-' + id],
+            revalidate: 3600,
+        }
+    )
+
+    const blog = await getCachedBlog();
     if (!blog) {
         // This will render the nearest `not-found.js` Error Boundary
         return notFound();

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/business/header";
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
+import Head from "next/head";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +16,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "My Frontend Blog",
+  title: "Oliver xyz",
   description: "Built by Next.js 15",
+  icons: {
+    icon: "/favicon.svg", // 也可以是 .png
+  },
 };
 
 export default function RootLayout({
@@ -26,6 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
       >

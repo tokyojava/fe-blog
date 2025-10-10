@@ -20,6 +20,7 @@ export async function CreateOrUpdateBlogAction(req: CreateOrUpdateBlogRequest, i
                         ...result.data,
                     });
                     serverLog("blog updated", blog);
+                    revalidatePath('/blogs/' + id);
                 } else {
                     blog = await createBlog({
                         ...result.data,

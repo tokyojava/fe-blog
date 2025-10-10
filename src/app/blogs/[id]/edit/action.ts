@@ -7,7 +7,7 @@ import { createBlog } from "@/model/blogs";
 import { CreateOrUpdateBlogRequest, CreateOrUpdateBlogZodSchema } from "@/types/blog";
 import { revalidatePath } from "next/cache";
 
-export async function CreateBlogAction(req: CreateOrUpdateBlogRequest) {
+export async function CreateOrUpdateBlogAction(req: CreateOrUpdateBlogRequest) {
     return handleActionApi({
         handler: async (user: TokenPayload | null) => {
             const result = await CreateOrUpdateBlogZodSchema.safeParseAsync(req);
